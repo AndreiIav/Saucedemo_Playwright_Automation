@@ -8,3 +8,4 @@ node_modules/
 /playwright/.auth
 tests/example.spec.ts
 tests-examples/
+.env
