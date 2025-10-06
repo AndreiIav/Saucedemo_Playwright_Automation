@@ -6,7 +6,7 @@ test('Product can be added to cart', async ({ page }) => {
     const testProductName = 'Sauce Labs Backpack';
     const inventoryPage = new InventoryPage(page);
 
-    await page.goto('https://www.saucedemo.com/inventory.html');
+    await inventoryPage.goto();
     //add item to cart
     const item = await inventoryPage.getOneItemByName(testProductName);
     const itemRemoveButton = await inventoryPage.getItemButton(item, "Remove");
@@ -21,7 +21,7 @@ test('Product can be removed from cart', async ({ page }) => {
     const testProductName = 'Sauce Labs Backpack';
     const inventoryPage = new InventoryPage(page);
 
-    await page.goto('https://www.saucedemo.com/inventory.html');
+    await inventoryPage.goto();
     //add item to cart
     const item = await inventoryPage.getOneItemByName(testProductName);
     const itemRemoveButton = await inventoryPage.getItemButton(item, 'Remove');
@@ -29,10 +29,9 @@ test('Product can be removed from cart', async ({ page }) => {
     await inventoryPage.addItemToCart(item);
     expect(page.getByTestId(itemRemoveButton)).toBeEnabled();
     expect(await inventoryPage.getShoppingCartCount()).toBe('1');
-
     // remove item from cart
     await inventoryPage.removeItemFromCart(item);
-    expect(page.getByTestId(itemAddButton)).toBeEnabled();
 
+    expect(page.getByTestId(itemAddButton)).toBeEnabled();
 }
 )

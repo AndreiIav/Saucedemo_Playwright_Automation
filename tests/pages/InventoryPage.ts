@@ -22,6 +22,10 @@ export class InventoryPage {
         this.shoppingCartBadge = page.getByTestId('shopping-cart-badge');
     }
 
+    async goto() {
+        await this.page.goto('https://www.saucedemo.com/inventory.html');
+    }
+
     async getAllItemsOnPage(): Promise<Item[]> {
         const items = await this.getInventoryItems();
         return await this.createItemCards(items);
