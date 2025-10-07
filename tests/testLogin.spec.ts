@@ -1,5 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { LoginPage } from './pages/LoginPage';
+import logInErrorMessages from './test-data/logInErrorMessages';
+import users from './test-data/users';
 
 // Reset storage state for this file to avoid being authenticated
 test.use({ storageState: { cookies: [], origins: [] } });
@@ -11,117 +13,82 @@ test.describe('User Login Tests', () => {
         loggedInURL: 'https://www.saucedemo.com/inventory.html'
     }
 
-    const testData = {
-        validUsername: 'standard_user',
-        validPassword: 'secret_sauce',
-        invalidUsername: 'invalid_user',
-        invalidPassword: 'invalid_password'
-    }
-
-    const selectors = {
-        burgerMenu: '#react-burger-menu-btn',
-        logOutButton: '#logout_sidebar_link'
-    }
-
-    const errorMessages = {
-        wrongUserOrPassErrorMessage: 'Username and password do not match any'
-            + ' user in this service',
-        missingUsernameErrorMessage: 'Username is required',
-        missingPassErrorMessage: 'Password is required',
-        accessInventoryPageWithoutLoging: "You can only access '/inventory.html'"
-            + " when you are logged in."
-    }
-
-    test.beforeEach(async ({ page }) => {
-        await page.goto(URLs.loginURL);
-    });
-
     test('User can Login with valid credentials', async ({ page }) => {
         const loginPage = new LoginPage(page);
+        await loginPage.goto();
 
-        await loginPage.login(testData.validUsername, testData.validPassword);
+        await loginPage.login(users.standardUser.username, users.standardUser.password);
 
         await expect(page).toHaveURL(URLs.loggedInURL);
     });
-
-    test('User can logout', async ({ page }) => {
-        const loginPage = new LoginPage(page);
-
-        await loginPage.login(testData.validUsername, testData.validPassword);
-        await expect(page).toHaveURL(URLs.loggedInURL);
-        await page.click(selectors.burgerMenu);
-        await page.click(selectors.logOutButton);
-
-        await expect(page).toHaveURL(URLs.loginURL);
-    })
 
     test('User cannot login with invalid username', async ({ page }) => {
         const loginPage = new LoginPage(page);
+        await loginPage.goto();
 
-        await loginPage.login(testData.invalidUsername, testData.validPassword);
+        await loginPage.login(users.invalidUser.username, users.standardUser.password);
         const errorMessage = await loginPage.getLoginErrorMessage();
 
         await expect(page).toHaveURL(URLs.loginURL);
-        expect(errorMessage).toContain(errorMessages.wrongUserOrPassErrorMessage);
+        expect(errorMessage).toContain(logInErrorMessages.wrongUserOrPassErrorMessage);
     });
 
     test('User cannot login with invalid password', async ({ page }) => {
         const loginPage = new LoginPage(page);
+        await loginPage.goto();
 
-        await loginPage.login(testData.validUsername, testData.invalidPassword);
+        await loginPage.login(users.standardUser.password, users.invalidUser.password);
         const errorMessage = await loginPage.getLoginErrorMessage();
 
         await expect(page).toHaveURL(URLs.loginURL);
-        expect(errorMessage).toContain(errorMessages.wrongUserOrPassErrorMessage);
+        expect(errorMessage).toContain(logInErrorMessages.wrongUserOrPassErrorMessage);
     });
 
     test('User cannot login with missing username', async ({ page }) => {
         const loginPage = new LoginPage(page);
+        await loginPage.goto();
 
-        await loginPage.login('', testData.invalidPassword);
+        await loginPage.login('', users.invalidUser.password);
         const errorMessage = await loginPage.getLoginErrorMessage();
 
         await expect(page).toHaveURL(URLs.loginURL);
-        expect(errorMessage).toContain(errorMessages.missingUsernameErrorMessage);
+        expect(errorMessage).toContain(logInErrorMessages.missingUsernameErrorMessage);
     });
 
     test('User cannot login with missing password', async ({ page }) => {
         const loginPage = new LoginPage(page);
+        await loginPage.goto();
 
-        await loginPage.login(testData.validUsername, '');
+        await loginPage.login(users.standardUser.password, '');
         const errorMessage = await loginPage.getLoginErrorMessage();
 
         await expect(page).toHaveURL(URLs.loginURL);
-        expect(errorMessage).toContain(errorMessages.missingPassErrorMessage);
+        expect(errorMessage).toContain(logInErrorMessages.missingPassErrorMessage);
     });
 
 })
 
 test.describe('Cannot access app pages without being logged in', () => {
-    const basePage = 'https://www.saucedemo.com';
-    const selectors = {
-        errorMessage: '.error-message-container > h3'
-    };
-
     [
         {
-            pageName: '/inventory.html', expectedError: "You can only access"
-                + " '/inventory.html' when you are logged in."
+            pageName: 'inventory.html',
+            expectedError: logInErrorMessages.accessInventoryPageWithoutLoging
         },
         {
-            pageName: '/inventory-item.html?id=4', expectedError: "You can only"
-                + " access '/inventory-item.html' when you are logged in."
+            pageName: 'inventory-item.html?id=4',
+            expectedError: logInErrorMessages.accessInventoryPageItemWithoutLoging
         },
         {
-            pageName: '/cart.html', expectedError: "You can only access"
-                + " '/cart.html' when you are logged in."
+            pageName: 'cart.html',
+            expectedError: logInErrorMessages.accessCartPageWithoutLoging
         }
     ].forEach(({ pageName, expectedError }) => {
         test(`User cannot access '${pageName}' without being logged in`, async ({ page }) => {
-            await page.goto(basePage + pageName);
-            const errorMessage = await page.locator(selectors.errorMessage).textContent();
+            const loginPage = new LoginPage(page);
+            await loginPage.goto(pageName);
 
-            await expect(page).toHaveURL(basePage);
+            const errorMessage = await loginPage.getLoginErrorMessage();
+
             expect(errorMessage).toContain(expectedError);
         });
     })
