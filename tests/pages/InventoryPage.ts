@@ -14,16 +14,26 @@ export class InventoryPage {
     readonly page: Page;
     readonly inventoryItem: Locator;
     readonly shoppingCartBadge: Locator;
+    readonly burgerMenu: Locator;
+    readonly logOutButton: Locator;
+
 
 
     constructor(page: Page) {
         this.page = page;
         this.inventoryItem = page.getByTestId('inventory-item');
         this.shoppingCartBadge = page.getByTestId('shopping-cart-badge');
+        this.burgerMenu = page.locator('#react-burger-menu-btn');
+        this.logOutButton = page.locator('#logout_sidebar_link');
     }
 
     async goto() {
         await this.page.goto('https://www.saucedemo.com/inventory.html');
+    }
+
+    async logOut() {
+        await this.burgerMenu.click();
+        await this.logOutButton.click();
     }
 
     async getAllItemsOnPage(): Promise<Item[]> {

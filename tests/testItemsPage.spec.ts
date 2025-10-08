@@ -33,5 +33,14 @@ test('Item can be removed from cart', async ({ page }) => {
     await inventoryPage.removeItemFromCart(item);
 
     expect(page.getByTestId(itemAddButton)).toBeEnabled();
-}
-)
+});
+
+test('User can log out', async ({ page }) => {
+    const inventoryPage = new InventoryPage(page);
+    const logInURL = 'https://www.saucedemo.com/'
+
+    await inventoryPage.goto();
+    await inventoryPage.logOut();
+
+    await expect(page).toHaveURL(logInURL);
+});
