@@ -16,6 +16,8 @@ export class InventoryPage {
     readonly shoppingCartBadge: Locator;
     readonly burgerMenu: Locator;
     readonly logOutButton: Locator;
+    readonly sortContainer: Locator;
+    readonly sortActiveOption: Locator;
 
 
 
@@ -25,6 +27,8 @@ export class InventoryPage {
         this.shoppingCartBadge = page.getByTestId('shopping-cart-badge');
         this.burgerMenu = page.locator('#react-burger-menu-btn');
         this.logOutButton = page.locator('#logout_sidebar_link');
+        this.sortActiveOption = page.getByTestId('active-option');
+        this.sortContainer = page.getByTestId('product-sort-container');
     }
 
     async goto() {
@@ -34,6 +38,15 @@ export class InventoryPage {
     async logOut() {
         await this.burgerMenu.click();
         await this.logOutButton.click();
+    }
+
+    async selectSortOption(option: string) {
+        await this.sortContainer.click();
+        await this.sortContainer.selectOption(option);
+    }
+
+    async getSortActiveOption() {
+        return await this.sortActiveOption.innerText();
     }
 
     async getAllItemsOnPage(): Promise<Item[]> {

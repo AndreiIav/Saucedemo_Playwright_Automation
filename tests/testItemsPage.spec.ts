@@ -44,3 +44,37 @@ test('User can log out', async ({ page }) => {
 
     await expect(page).toHaveURL(logInURL);
 });
+
+
+[
+    {
+        sortOption: 'za',
+        expectedSortText: 'Name (Z to A)'
+    },
+    {
+        sortOption: 'az',
+        expectedSortText: 'Name (A to Z)'
+    },
+    {
+        sortOption: 'lohi',
+        expectedSortText: 'Price (low to high)'
+    },
+    {
+        sortOption: 'hilo',
+        expectedSortText: 'Price (high to low)'
+    }
+].forEach(({ sortOption, expectedSortText }) => {
+    test(`Sort text '${expectedSortText}' updates when the option is selected`,
+        async ({ page }) => {
+            const inventoryPage = new InventoryPage(page);
+
+            await inventoryPage.goto();
+            await inventoryPage.selectSortOption(sortOption);
+
+            const sortText = await inventoryPage.getSortActiveOption();
+            await page.waitForTimeout(1000);
+            expect(sortText).toBe(expectedSortText);
+        });
+
+});
+
