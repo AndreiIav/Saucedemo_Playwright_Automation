@@ -70,6 +70,43 @@ export class InventoryPage {
         return items
     }
 
+    async getNameOfAllItemsOnPage() {
+        const items = await this.getInventoryItems();
+        const itemsCount = await items.count();
+        const itemNames = [];
+
+        for (let i = 0; i < itemsCount; i++) {
+            const item = items.nth(i);
+            const itemCard = new ItemCardPage(item);
+
+            const itemName = await itemCard.getItemName();
+            itemNames.push(itemName);
+        }
+
+        return itemNames;
+    }
+
+    async getPriceOfAllItemsOnPage() {
+        const items = await this.getInventoryItems();
+        const itemsCount = await items.count();
+        const itemPrices = [];
+
+        for (let i = 0; i < itemsCount; i++) {
+            const item = items.nth(i);
+            const itemCard = new ItemCardPage(item);
+
+            const itemPrice = await itemCard.getItemPrice();
+            const itemPriceNumber = await this.convertItemPriceToNumber(itemPrice);
+            itemPrices.push(itemPriceNumber);
+        }
+
+        return itemPrices;
+    }
+
+    async convertItemPriceToNumber(itemPrice: String) {
+        return Number(itemPrice.replace(/[^.\d]/g, ''));
+    }
+
     async addItemToCart(item: Item) {
         const addToCartButtonId = await this.getItemAtribute(item, 'itemAddtoCartButton');
         await this.page.getByTestId(addToCartButtonId).click();
@@ -102,7 +139,6 @@ export class InventoryPage {
         const itemCards = [];
 
         for (let i = 0; i < itemsCount; i++) {
-            // const item = this.inventoryItem.nth(i);
             const item = items.nth(i);
             const itemCard = new ItemCardPage(item);
 
