@@ -103,17 +103,31 @@ export class InventoryPage {
         return itemPrices;
     }
 
+    async addItemToCart(itemName: string): Promise<Item> {
+        const item = await this.getOneItemByName(itemName);
+        const addToCartButtonId =
+            await this.getItemAtribute(item, 'itemAddtoCartButton');
+        await this.clickAddToCart(addToCartButtonId);
+        return item;
+    }
+
+    async removeItemFromCart(itemName: string): Promise<Item> {
+        const item = await this.getOneItemByName(itemName);
+        const removeFromCartButtonId =
+            await this.getItemAtribute(item, 'itemRemoveButton');
+        await this.clickAddToCart(removeFromCartButtonId);
+        return item;
+    }
+
     async convertItemPriceToNumber(itemPrice: String) {
         return Number(itemPrice.replace(/[^.\d]/g, ''));
     }
 
-    async addItemToCart(item: Item) {
-        const addToCartButtonId = await this.getItemAtribute(item, 'itemAddtoCartButton');
-        await this.page.getByTestId(addToCartButtonId).click();
+    async clickAddToCart(addtoCartButtonId: string) {
+        await this.page.getByTestId(addtoCartButtonId).click();
     }
 
-    async removeItemFromCart(item: Item) {
-        const removeFromCartButtonId = await this.getItemAtribute(item, 'itemRemoveButton');
+    async clickRemoveFromCart(removeFromCartButtonId: string) {
         await this.page.getByTestId(removeFromCartButtonId).click();
     }
 

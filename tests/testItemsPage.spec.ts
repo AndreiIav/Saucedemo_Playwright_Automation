@@ -7,10 +7,8 @@ test('Item can be added to cart', async ({ page }) => {
     const inventoryPage = new InventoryPage(page);
 
     await inventoryPage.goto();
-    //add item to cart
-    const item = await inventoryPage.getOneItemByName(testItemName);
+    const item = await inventoryPage.addItemToCart(testItemName);
     const itemRemoveButton = await inventoryPage.getItemButton(item, "Remove");
-    await inventoryPage.addItemToCart(item);
 
     expect(page.getByTestId(itemRemoveButton)).toBeEnabled();
     expect(await inventoryPage.getShoppingCartCount()).toBe('1');
@@ -18,21 +16,18 @@ test('Item can be added to cart', async ({ page }) => {
 });
 
 test('Item can be removed from cart', async ({ page }) => {
-    const testItemName = 'Sauce Labs Backpack';
+    const testItemName = 'Test.allTheThings() T-Shirt (Red)';
     const inventoryPage = new InventoryPage(page);
 
     await inventoryPage.goto();
-    //add item to cart
-    const item = await inventoryPage.getOneItemByName(testItemName);
-    const itemRemoveButton = await inventoryPage.getItemButton(item, 'Remove');
-    const itemAddButton = await inventoryPage.getItemButton(item, 'addToCart');
-    await inventoryPage.addItemToCart(item);
-    expect(page.getByTestId(itemRemoveButton)).toBeEnabled();
-    expect(await inventoryPage.getShoppingCartCount()).toBe('1');
+    // add item to cart
+    const item = await inventoryPage.addItemToCart(testItemName);
+    const itemAddButton = await inventoryPage.getItemButton(item, "addToCart");
     // remove item from cart
-    await inventoryPage.removeItemFromCart(item);
+    await inventoryPage.removeItemFromCart(testItemName);
 
     expect(page.getByTestId(itemAddButton)).toBeEnabled();
+    expect(inventoryPage.shoppingCartBadge).toBeHidden();
 });
 
 test('User can log out', async ({ page }) => {
