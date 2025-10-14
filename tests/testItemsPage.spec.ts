@@ -8,7 +8,7 @@ test('Item can be added to cart', async ({ page }) => {
 
     await inventoryPage.goto();
     const item = await inventoryPage.addItemToCart(testItemName);
-    const itemRemoveButton = await inventoryPage.getItemButton(item, "Remove");
+    const itemRemoveButton = inventoryPage.getItemButton(item, "Remove");
 
     expect(page.getByTestId(itemRemoveButton)).toBeEnabled();
     expect(await inventoryPage.getShoppingCartCount()).toBe('1');
@@ -22,7 +22,7 @@ test('Item can be removed from cart', async ({ page }) => {
     await inventoryPage.goto();
     // add item to cart
     const item = await inventoryPage.addItemToCart(testItemName);
-    const itemAddButton = await inventoryPage.getItemButton(item, "addToCart");
+    const itemAddButton = inventoryPage.getItemButton(item, "addToCart");
     // remove item from cart
     await inventoryPage.removeItemFromCart(testItemName);
 

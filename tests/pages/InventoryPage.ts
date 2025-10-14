@@ -50,28 +50,24 @@ export class InventoryPage {
     }
 
     async getAllItemsOnPage(): Promise<Item[]> {
-        const items = await this.getInventoryItems();
+        const items = this.getInventoryItems();
         return await this.createItemCards(items);
     }
 
     async getOneItemByName(itemName: string) {
-        const items = await this.getInventoryItems(itemName);
+        const items = this.getInventoryItems(itemName);
         const item = await this.createItemCards(items);
         return item[0]
     }
 
-    async getInventoryItems(itemName = '') {
-        let items;
-        if (itemName === '') {
-            items = this.inventoryItem;
-        } else {
-            items = this.inventoryItem.filter({ hasText: itemName });
-        }
-        return items
+    getInventoryItems(itemName = '') {
+        return itemName
+            ? this.inventoryItem.filter({ hasText: itemName })
+            : this.inventoryItem;
     }
 
     async getNameOfAllItemsOnPage() {
-        const items = await this.getInventoryItems();
+        const items = this.getInventoryItems();
         const itemsCount = await items.count();
         const itemNames = [];
 
@@ -87,7 +83,7 @@ export class InventoryPage {
     }
 
     async getPriceOfAllItemsOnPage() {
-        const items = await this.getInventoryItems();
+        const items = this.getInventoryItems();
         const itemsCount = await items.count();
         const itemPrices = [];
 
@@ -96,7 +92,7 @@ export class InventoryPage {
             const itemCard = new ItemCardPage(item);
 
             const itemPrice = await itemCard.getItemPrice();
-            const itemPriceNumber = await this.convertItemPriceToNumber(itemPrice);
+            const itemPriceNumber = this.convertItemPriceToNumber(itemPrice);
             itemPrices.push(itemPriceNumber);
         }
 
@@ -106,7 +102,7 @@ export class InventoryPage {
     async addItemToCart(itemName: string): Promise<Item> {
         const item = await this.getOneItemByName(itemName);
         const addToCartButtonId =
-            await this.getItemAtribute(item, 'itemAddtoCartButton');
+            this.getItemAtribute(item, 'itemAddtoCartButton');
         await this.clickAddToCart(addToCartButtonId);
         return item;
     }
@@ -114,12 +110,12 @@ export class InventoryPage {
     async removeItemFromCart(itemName: string): Promise<Item> {
         const item = await this.getOneItemByName(itemName);
         const removeFromCartButtonId =
-            await this.getItemAtribute(item, 'itemRemoveButton');
+            this.getItemAtribute(item, 'itemRemoveButton');
         await this.clickAddToCart(removeFromCartButtonId);
         return item;
     }
 
-    async convertItemPriceToNumber(itemPrice: String) {
+    convertItemPriceToNumber(itemPrice: String) {
         return Number(itemPrice.replace(/[^.\d]/g, ''));
     }
 
@@ -131,15 +127,13 @@ export class InventoryPage {
         await this.page.getByTestId(removeFromCartButtonId).click();
     }
 
-    async getItemButton(item: Item, buttonType: "addToCart" | "Remove") {
-        if (buttonType === "addToCart") {
-            return item.itemAddtoCartButton;
-        } else {
-            return item.itemRemoveButton;
-        }
+    getItemButton(item: Item, buttonType: "addToCart" | "Remove") {
+        return buttonType === "addToCart"
+            ? item.itemAddtoCartButton
+            : item.itemRemoveButton
     }
 
-    async getItemAtribute(item: Item, key: keyof Item) {
+    getItemAtribute(item: Item, key: keyof Item) {
         return item[key]
     }
 
@@ -176,18 +170,17 @@ export class InventoryPage {
         return itemCards;
     }
 
-
     /**
      * @param productName The product name to use
      * @param prefix      The prefix to be added to the edited product name
      * @param suffix      The suffix to be added to the edited product name 
      * @returns           A string to be used as a data-test id
      */
-    async createItemImageLocatorId(
+    createItemImageLocatorId(
         productName: string,
         prefix: string = "inventory-item-",
         suffix: string = '-img'
-    ): Promise<string> {
+    ): string {
         return prefix + productName.toLocaleLowerCase().replace(/\s+/g, '-') + suffix;
     }
 
@@ -197,10 +190,10 @@ export class InventoryPage {
      *                    "add-to-cart-", "remove-"
      * @returns           A string to be used as a data-test id
      */
-    async createProductCartLocatorId(
+    createProductCartLocatorId(
         productName: string,
         prefix: "add-to-cart-" | "remove-"
-    ): Promise<string> {
+    ): string {
         return prefix + productName.toLocaleLowerCase().replace(/\s+/g, '-');
     }
 
