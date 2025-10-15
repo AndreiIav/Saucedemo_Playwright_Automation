@@ -151,9 +151,12 @@ export class InventoryPage {
             const itemCard = new ItemCardPage(item);
 
             const itemName = await itemCard.getItemName();
-            const itemImageLocatorId = await this.createItemImageLocatorId(itemName);
-            const itemAddToCartLocatorId = await this.createProductCartLocatorId(itemName, "add-to-cart-");
-            const itemRemoveFromCartLocatorId = await this.createProductCartLocatorId(itemName, "remove-");
+            const itemImageLocatorId =
+                this.createItemImageLocatorId(itemName);
+            const itemAddToCartLocatorId =
+                this.createProductCartLocatorId(itemName, "add-to-cart-");
+            const itemRemoveFromCartLocatorId =
+                this.createProductCartLocatorId(itemName, "remove-");
 
             // create Item object
             const new_item: Item = {
@@ -181,7 +184,8 @@ export class InventoryPage {
         prefix: string = "inventory-item-",
         suffix: string = '-img'
     ): string {
-        return prefix + productName.toLocaleLowerCase().replace(/\s+/g, '-') + suffix;
+        return prefix +
+            productName.toLocaleLowerCase().replace(/\s+/g, '-') + suffix;
     }
 
     /**
