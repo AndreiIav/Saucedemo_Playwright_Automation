@@ -1,23 +1,26 @@
 import { test, expect } from '@playwright/test';
-import { InventoryPage } from './pages/InventoryPage'
+import { InventoryPage } from './pages/InventoryPage';
+import { HeaderPage } from './pages/HeaderPage';
 
 
 test('Item can be added to cart', async ({ page }) => {
     const testItemName = 'Sauce Labs Backpack';
     const inventoryPage = new InventoryPage(page);
+    const headerPage = new HeaderPage(page);
 
     await inventoryPage.goto();
     const item = await inventoryPage.addItemToCart(testItemName);
     const itemRemoveButton = inventoryPage.getItemButton(item, "Remove");
 
     expect(page.getByTestId(itemRemoveButton)).toBeEnabled();
-    expect(await inventoryPage.getShoppingCartCount()).toBe('1');
+    expect(await headerPage.getShoppingCartCount()).toBe('1');
 
 });
 
 test('Item can be removed from cart', async ({ page }) => {
     const testItemName = 'Test.allTheThings() T-Shirt (Red)';
     const inventoryPage = new InventoryPage(page);
+    const headerPage = new HeaderPage(page);
 
     await inventoryPage.goto();
     // add item to cart
@@ -27,15 +30,16 @@ test('Item can be removed from cart', async ({ page }) => {
     await inventoryPage.removeItemFromCart(testItemName);
 
     expect(page.getByTestId(itemAddButton)).toBeEnabled();
-    expect(inventoryPage.shoppingCartBadge).toBeHidden();
+    expect(headerPage.shoppingCartBadge).toBeHidden();
 });
 
 test('User can log out', async ({ page }) => {
-    const inventoryPage = new InventoryPage(page);
     const logInURL = 'https://www.saucedemo.com/'
+    const inventoryPage = new InventoryPage(page);
+    const headerPage = new HeaderPage(page);
 
     await inventoryPage.goto();
-    await inventoryPage.logOut();
+    await headerPage.logOut();
 
     await expect(page).toHaveURL(logInURL);
 });
@@ -62,10 +66,11 @@ test('User can log out', async ({ page }) => {
     test(`Sort text '${expectedSortText}' updates when the option is selected`,
         async ({ page }) => {
             const inventoryPage = new InventoryPage(page);
+            const headerPage = new HeaderPage(page);
 
             await inventoryPage.goto();
-            await inventoryPage.selectSortOption(sortOption);
-            const sortText = await inventoryPage.getSortActiveOption();
+            await headerPage.selectSortOption(sortOption);
+            const sortText = await headerPage.getSortActiveOption();
 
             expect(sortText).toBe(expectedSortText);
         });
@@ -74,10 +79,11 @@ test('User can log out', async ({ page }) => {
 
 test('Items are sorted A to Z', async ({ page }) => {
     const inventoryPage = new InventoryPage(page);
+    const headerPage = new HeaderPage(page);
 
     await inventoryPage.goto();
     const itemNames = await inventoryPage.getNameOfAllItemsOnPage();
-    await inventoryPage.selectSortOption('az');
+    await headerPage.selectSortOption('az');
     const itemNamesSorted = await inventoryPage.getNameOfAllItemsOnPage();
     itemNames.sort();
 
@@ -87,10 +93,11 @@ test('Items are sorted A to Z', async ({ page }) => {
 
 test('Items are sorted Z to A', async ({ page }) => {
     const inventoryPage = new InventoryPage(page);
+    const headerPage = new HeaderPage(page);
 
     await inventoryPage.goto();
     const itemNames = await inventoryPage.getNameOfAllItemsOnPage();
-    await inventoryPage.selectSortOption('za');
+    await headerPage.selectSortOption('za');
     const itemNamesSorted = await inventoryPage.getNameOfAllItemsOnPage();
     itemNames.sort().reverse();
 
@@ -99,10 +106,11 @@ test('Items are sorted Z to A', async ({ page }) => {
 
 test('Items are sorted by Price low to high', async ({ page }) => {
     const inventoryPage = new InventoryPage(page);
+    const headerPage = new HeaderPage(page);
 
     await inventoryPage.goto();
     const itemPrices = await inventoryPage.getPriceOfAllItemsOnPage();
-    await inventoryPage.selectSortOption('lohi');
+    await headerPage.selectSortOption('lohi');
     const itemPricesSorted = await inventoryPage.getPriceOfAllItemsOnPage();
     itemPrices.sort((a, b) => a - b);
 
@@ -111,10 +119,11 @@ test('Items are sorted by Price low to high', async ({ page }) => {
 
 test('Items are sorted by Price high to low', async ({ page }) => {
     const inventoryPage = new InventoryPage(page);
+    const headerPage = new HeaderPage(page);
 
     await inventoryPage.goto();
     const itemPrices = await inventoryPage.getPriceOfAllItemsOnPage();
-    await inventoryPage.selectSortOption('hilo');
+    await headerPage.selectSortOption('hilo');
     const itemPricesSorted = await inventoryPage.getPriceOfAllItemsOnPage();
     itemPrices.sort((a, b) => b - a);
 
