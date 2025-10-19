@@ -9,6 +9,10 @@ export class HeaderPage {
     // burger menu locators
     readonly burgerMenu: Locator;
     readonly logOutButton: Locator;
+    //page title
+    readonly pageTitle: Locator;
+    // this button is present only in an Item page
+    readonly backToProductsButton: Locator;
 
     constructor(page: Page) {
         this.page = page;
@@ -17,6 +21,8 @@ export class HeaderPage {
         this.sortContainer = page.getByTestId('product-sort-container');
         this.burgerMenu = page.locator('#react-burger-menu-btn');
         this.logOutButton = page.locator('#logout_sidebar_link');
+        this.pageTitle = page.getByTestId('title');
+        this.backToProductsButton = page.getByTestId('back-to-products');
 
     }
 
@@ -36,6 +42,14 @@ export class HeaderPage {
 
     async getShoppingCartCount() {
         return this.shoppingCartBadge.innerText();
+    }
+
+    async getPageTitle() {
+        return this.pageTitle.innerText();
+    }
+
+    async clickBackToProductsButton() {
+        await this.backToProductsButton.click();
     }
 
 

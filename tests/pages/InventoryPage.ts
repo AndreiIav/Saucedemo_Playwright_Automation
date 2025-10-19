@@ -112,6 +112,10 @@ export class InventoryPage {
         return item[key]
     }
 
+    async clickItemNameLink(itemName: string) {
+        await this.page.getByRole("link").filter({ hasText: itemName }).click();
+    }
+
     async createItemCards(items: Locator): Promise<Item[]> {
         const itemsCount = await items.count();
         const itemCards = [];

@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { InventoryPage } from './pages/InventoryPage';
 import { HeaderPage } from './pages/HeaderPage';
-
+import { ItemPage } from './pages/ItemPage';
 
 test('Item can be added to cart', async ({ page }) => {
     const testItemName = 'Sauce Labs Backpack';
@@ -128,4 +128,76 @@ test('Items are sorted by Price high to low', async ({ page }) => {
     itemPrices.sort((a, b) => b - a);
 
     expect(itemPrices).toEqual(itemPricesSorted);
+});
+
+
+test.describe('Item page tests', () => {
+
+    test('Item page can be accessed for an Item', async ({ page }) => {
+        const testItemName = 'Sauce Labs Backpack';
+        const inventoryPage = new InventoryPage(page);
+
+        await inventoryPage.goto();
+        await inventoryPage.clickItemNameLink(testItemName);
+
+        expect(page).toHaveURL(/inventory-item\.html.*/)
+    })
+
+    test('Item details match when accessing the Item page', async ({ page }) => {
+        const testItemName = 'Sauce Labs Backpack';
+        const inventoryPage = new InventoryPage(page);
+
+        await inventoryPage.goto();
+        const testItemCard = await inventoryPage.getOneItemByName(testItemName);
+        await inventoryPage.clickItemNameLink(testItemName);
+        const testClickedItemCard = await inventoryPage.getOneItemByName(testItemName);
+
+        expect(testItemCard).toEqual(testClickedItemCard)
+    });
+
+    test('Item can be added to cart from the Item page', async ({ page }) => {
+        const testItemName = 'Sauce Labs Backpack';
+        const inventoryPage = new InventoryPage(page);
+        const headerPage = new HeaderPage(page);
+        const itemPage = new ItemPage(page);
+
+        await inventoryPage.goto();
+        await inventoryPage.clickItemNameLink(testItemName);
+        await itemPage.clickAddtoCartButton();
+
+        expect(itemPage.itemRemoveButton).toBeEnabled();
+        expect(await headerPage.getShoppingCartCount()).toBe('1');
+    });
+
+    test('Item can be removed from cart from the Item page', async ({ page }) => {
+        const testItemName = 'Sauce Labs Backpack';
+        const inventoryPage = new InventoryPage(page);
+        const headerPage = new HeaderPage(page);
+        const itemPage = new ItemPage(page);
+
+        await inventoryPage.goto();
+        await inventoryPage.clickItemNameLink(testItemName);
+        await itemPage.clickAddtoCartButton();
+        expect(itemPage.itemRemoveButton).toBeEnabled();
+        expect(await headerPage.getShoppingCartCount()).toBe('1');
+
+        await itemPage.clickRemoveFromCartButton();
+        expect(itemPage.itemAddtoCartButton).toBeEnabled();
+        expect(headerPage.shoppingCartBadge).toBeHidden();
+    });
+
+    test('Can navigate to Items page from Item page', async ({ page }) => {
+        const testItemName = 'Sauce Labs Onesie';
+        const inventoryPage = new InventoryPage(page);
+        const headerPage = new HeaderPage(page);
+        const itemsPageUrl = 'https://www.saucedemo.com/inventory.html'
+
+        await inventoryPage.goto();
+        await inventoryPage.clickItemNameLink(testItemName);
+        await headerPage.clickBackToProductsButton();
+
+        expect(page).toHaveURL(itemsPageUrl);
+
+    })
+
 });
