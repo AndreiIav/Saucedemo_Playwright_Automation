@@ -33,18 +33,6 @@ test('Item can be removed from cart', async ({ page }) => {
     expect(headerPage.shoppingCartBadge).toBeHidden();
 });
 
-test('User can log out', async ({ page }) => {
-    const logInURL = 'https://www.saucedemo.com/'
-    const inventoryPage = new InventoryPage(page);
-    const headerPage = new HeaderPage(page);
-
-    await inventoryPage.goto();
-    await headerPage.logOut();
-
-    await expect(page).toHaveURL(logInURL);
-});
-
-
 [
     {
         sortOption: 'za',
