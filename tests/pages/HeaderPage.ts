@@ -2,6 +2,7 @@ import { type Page, type Locator } from '@playwright/test';
 
 export class HeaderPage {
     readonly page: Page;
+    readonly shoppingCartButton: Locator;
     readonly shoppingCartBadge: Locator;
     // sort buttons locators
     readonly sortContainer: Locator;
@@ -16,6 +17,7 @@ export class HeaderPage {
 
     constructor(page: Page) {
         this.page = page;
+        this.shoppingCartButton = page.getByTestId('shopping-cart-link');
         this.shoppingCartBadge = page.getByTestId('shopping-cart-badge');
         this.sortActiveOption = page.getByTestId('active-option');
         this.sortContainer = page.getByTestId('product-sort-container');
@@ -50,6 +52,10 @@ export class HeaderPage {
 
     async clickBackToProductsButton() {
         await this.backToProductsButton.click();
+    }
+
+    async clickCartButton() {
+        await this.shoppingCartButton.click();
     }
 
 
