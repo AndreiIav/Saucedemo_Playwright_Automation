@@ -1,5 +1,6 @@
 import { type Page, type Locator } from '@playwright/test';
 import { ItemCardPage } from './ItemCardPage';
+import { extractNumberFromString } from '../utils/price.utils';
 
 interface Item {
     itemName: string;
@@ -67,7 +68,7 @@ export class InventoryPage {
             const itemCard = new ItemCardPage(item);
 
             const itemPrice = await itemCard.getItemPrice();
-            const itemPriceNumber = this.convertItemPriceToNumber(itemPrice);
+            const itemPriceNumber = extractNumberFromString(itemPrice);
             itemPrices.push(itemPriceNumber);
         }
 
@@ -88,10 +89,6 @@ export class InventoryPage {
             this.getItemAtribute(item, 'itemRemoveButton');
         await this.clickAddToCart(removeFromCartButtonId);
         return item;
-    }
-
-    convertItemPriceToNumber(itemPrice: String) {
-        return Number(itemPrice.replace(/[^.\d]/g, ''));
     }
 
     async clickAddToCart(addtoCartButtonId: string) {
