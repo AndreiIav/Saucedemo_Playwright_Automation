@@ -6,6 +6,24 @@ import { HeaderPage } from './pages/HeaderPage'
 import { CheckoutTwoPage } from './pages/CheckoutTwoPage';
 import { calculateTax, calculateTotal } from './utils/price.utils';
 
+test('Checkout step two page can be accessed', async ({ page }) => {
+    const testItemNames = 'Sauce Labs Backpack';
+    const expectedPageUrl = 'https://www.saucedemo.com/checkout-step-two.html';
+    const inventoryPage = new InventoryPage(page);
+    const headerPage = new HeaderPage(page);
+    const cartPage = new CartPage(page);
+    const checkoutOnePage = new CheckoutOnePage(page);
+
+    await inventoryPage.goto();
+    await inventoryPage.addItemToCart(testItemNames);
+    await headerPage.clickCartButton();
+    await cartPage.clickCheckoutButton();
+    await checkoutOnePage.enterCheckoutInfo('firstName', 'lastName', 'postalCode');
+    await checkoutOnePage.clickContinueButton();
+
+    expect(page).toHaveURL(expectedPageUrl);
+});
+
 test('Added Items details match when accessing Checkout page',
     async ({ page }) => {
         const testItemNames =
@@ -63,3 +81,43 @@ test('Calculate Items Total',
         expect(itemTaxDisplay).toBe(itemTax);
         expect(itemTotalPriceDisplay).toBe(itemTotalPrice);
     });
+
+test('Can cancel order', async ({ page }) => {
+    const testItemNames = 'Sauce Labs Backpack';
+    const expectedPageUrl = 'https://www.saucedemo.com/inventory.html';
+    const inventoryPage = new InventoryPage(page);
+    const headerPage = new HeaderPage(page);
+    const cartPage = new CartPage(page);
+    const checkoutOnePage = new CheckoutOnePage(page);
+    const checkoutTwoPage = new CheckoutTwoPage(page);
+
+    await inventoryPage.goto();
+    await inventoryPage.addItemToCart(testItemNames);
+    await headerPage.clickCartButton();
+    await cartPage.clickCheckoutButton();
+    await checkoutOnePage.enterCheckoutInfo('firstName', 'lastName', 'postalCode');
+    await checkoutOnePage.clickContinueButton();
+    await checkoutTwoPage.clickCancelButton();
+
+    expect(page).toHaveURL(expectedPageUrl);
+});
+
+test('Order can be completed', async ({ page }) => {
+    const testItemNames = 'Sauce Labs Backpack';
+    const expectedPageUrl = 'https://www.saucedemo.com/checkout-complete.html';
+    const inventoryPage = new InventoryPage(page);
+    const headerPage = new HeaderPage(page);
+    const cartPage = new CartPage(page);
+    const checkoutOnePage = new CheckoutOnePage(page);
+    const checkoutTwoPage = new CheckoutTwoPage(page);
+
+    await inventoryPage.goto();
+    await inventoryPage.addItemToCart(testItemNames);
+    await headerPage.clickCartButton();
+    await cartPage.clickCheckoutButton();
+    await checkoutOnePage.enterCheckoutInfo('firstName', 'lastName', 'postalCode');
+    await checkoutOnePage.clickContinueButton();
+    await checkoutTwoPage.clickFinishButton();
+
+    expect(page).toHaveURL(expectedPageUrl);
+});
