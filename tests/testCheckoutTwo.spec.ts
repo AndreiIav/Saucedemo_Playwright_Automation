@@ -18,7 +18,7 @@ test('Checkout step two page can be accessed', async ({ page }) => {
     await inventoryPage.addItemToCart(testItemNames);
     await headerPage.clickCartButton();
     await cartPage.clickCheckoutButton();
-    await checkoutOnePage.enterCheckoutInfo('firstName', 'lastName', 'postalCode');
+    await checkoutOnePage.enterCheckoutInfo();
     await checkoutOnePage.clickContinueButton();
 
     expect(page).toHaveURL(expectedPageUrl);
@@ -41,7 +41,7 @@ test('Added Items details match when accessing Checkout page',
         }
         await headerPage.clickCartButton();
         await cartPage.clickCheckoutButton();
-        await checkoutOnePage.enterCheckoutInfo('firstName', 'lastName', 'postalCode');
+        await checkoutOnePage.enterCheckoutInfo();
         await checkoutOnePage.clickContinueButton();
         const checkoutItems = await inventoryPage.getAllItemsOnPage();
 
@@ -66,7 +66,7 @@ test('Calculate Items Total',
         }
         await headerPage.clickCartButton();
         await cartPage.clickCheckoutButton();
-        await checkoutOnePage.enterCheckoutInfo('firstName', 'lastName', 'postalCode');
+        await checkoutOnePage.enterCheckoutInfo();
         await checkoutOnePage.clickContinueButton();
         const checkoutItems = await inventoryPage.getPriceOfAllItemsOnPage();
 
@@ -95,7 +95,7 @@ test('Can cancel order', async ({ page }) => {
     await inventoryPage.addItemToCart(testItemNames);
     await headerPage.clickCartButton();
     await cartPage.clickCheckoutButton();
-    await checkoutOnePage.enterCheckoutInfo('firstName', 'lastName', 'postalCode');
+    await checkoutOnePage.enterCheckoutInfo();
     await checkoutOnePage.clickContinueButton();
     await checkoutTwoPage.clickCancelButton();
 
@@ -115,7 +115,7 @@ test('Order can be completed', async ({ page }) => {
     await inventoryPage.addItemToCart(testItemNames);
     await headerPage.clickCartButton();
     await cartPage.clickCheckoutButton();
-    await checkoutOnePage.enterCheckoutInfo('firstName', 'lastName', 'postalCode');
+    await checkoutOnePage.enterCheckoutInfo();
     await checkoutOnePage.clickContinueButton();
     await checkoutTwoPage.clickFinishButton();
 

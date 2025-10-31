@@ -29,9 +29,9 @@ export class CheckoutOnePage {
     }
 
     async enterCheckoutInfo(
-        firstName: string,
-        lastName: string,
-        zipPostalCode: string
+        firstName = 'first name',
+        lastName = 'last name',
+        zipPostalCode = 'postal code'
     ) {
         await this.firstNameField.fill(firstName);
         await this.lastNameField.fill(lastName);

@@ -10,7 +10,6 @@ test('Checkout step one page can be accessed', async ({ page }) => {
     const inventoryPage = new InventoryPage(page);
     const headerPage = new HeaderPage(page);
     const cartPage = new CartPage(page);
-    const checkoutOnePage = new CheckoutOnePage(page);
 
     await inventoryPage.goto();
     await inventoryPage.addItemToCart(testItemNames);
@@ -22,9 +21,6 @@ test('Checkout step one page can be accessed', async ({ page }) => {
 
 test('Next page can be accessed after all required information has been filled',
     async ({ page }) => {
-        const firstName = 'firstName';
-        const lastName = 'lastName';
-        const zipPostalCode = 'zipPostalCode';
         const checkoutOverviewUrl = 'https://www.saucedemo.com/checkout-step-two.html'
         const inventoryPage = new InventoryPage(page);
         const headerPage = new HeaderPage(page);
@@ -34,8 +30,7 @@ test('Next page can be accessed after all required information has been filled',
         await inventoryPage.goto();
         await headerPage.clickCartButton();
         await cartPage.clickCheckoutButton();
-        await checkoutOnePage.enterCheckoutInfo(
-            firstName, lastName, zipPostalCode);
+        await checkoutOnePage.enterCheckoutInfo();
         await checkoutOnePage.clickContinueButton();
 
         expect(page).toHaveURL(checkoutOverviewUrl);
