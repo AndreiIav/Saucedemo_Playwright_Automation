@@ -4,22 +4,7 @@ import { HeaderPage } from './pages/HeaderPage';
 import { CartPage } from './pages/CartPage';
 import { CheckoutOnePage } from './pages/CheckoutOnePage';
 
-test('Checkout step one page can be accessed', async ({ page }) => {
-    const testItemNames = 'Sauce Labs Backpack';
-    const expectedPageUrl = 'https://www.saucedemo.com/checkout-step-one.html';
-    const inventoryPage = new InventoryPage(page);
-    const headerPage = new HeaderPage(page);
-    const cartPage = new CartPage(page);
-
-    await inventoryPage.goto();
-    await inventoryPage.addItemToCart(testItemNames);
-    await headerPage.clickCartButton();
-    await cartPage.clickCheckoutButton();
-
-    expect(page).toHaveURL(expectedPageUrl);
-});
-
-test('Next page can be accessed after all required information has been filled',
+test('Checkout step two page can be accessed after all required information has been filled',
     async ({ page }) => {
         const checkoutOverviewUrl = 'https://www.saucedemo.com/checkout-step-two.html'
         const inventoryPage = new InventoryPage(page);

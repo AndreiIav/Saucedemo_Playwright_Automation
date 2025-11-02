@@ -44,7 +44,7 @@ test('Can navigate to Item page from Cart page', async ({ page }) => {
 });
 
 
-test('Can navigate to Checkout page from Cart page', async ({ page }) => {
+test('Can navigate to Checkout step one page from Cart page', async ({ page }) => {
     const inventoryPage = new InventoryPage(page);
     const headerPage = new HeaderPage(page);
     const cartPage = new CartPage(page);

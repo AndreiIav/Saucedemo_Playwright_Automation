@@ -6,24 +6,6 @@ import { HeaderPage } from './pages/HeaderPage'
 import { CheckoutTwoPage } from './pages/CheckoutTwoPage';
 import { calculateTax, calculateTotal } from './utils/price.utils';
 
-test('Checkout step two page can be accessed', async ({ page }) => {
-    const testItemNames = 'Sauce Labs Backpack';
-    const expectedPageUrl = 'https://www.saucedemo.com/checkout-step-two.html';
-    const inventoryPage = new InventoryPage(page);
-    const headerPage = new HeaderPage(page);
-    const cartPage = new CartPage(page);
-    const checkoutOnePage = new CheckoutOnePage(page);
-
-    await inventoryPage.goto();
-    await inventoryPage.addItemToCart(testItemNames);
-    await headerPage.clickCartButton();
-    await cartPage.clickCheckoutButton();
-    await checkoutOnePage.enterCheckoutInfo();
-    await checkoutOnePage.clickContinueButton();
-
-    expect(page).toHaveURL(expectedPageUrl);
-});
-
 test('Added Items details match when accessing Checkout page',
     async ({ page }) => {
         const testItemNames =
@@ -48,7 +30,7 @@ test('Added Items details match when accessing Checkout page',
         expect(inventoryItems).toEqual(checkoutItems);
     });
 
-test('Calculate Items Total',
+test('Cart Items Total is calculated correctly',
     async ({ page }) => {
         const testItemNames =
             ['Sauce Labs Backpack', 'Sauce Labs Bike Light', 'Sauce Labs Bolt T-Shirt']
@@ -82,7 +64,7 @@ test('Calculate Items Total',
         expect(itemTotalPriceDisplay).toBe(itemTotalPrice);
     });
 
-test('Can cancel order', async ({ page }) => {
+test('Order can be cancelled', async ({ page }) => {
     const testItemNames = 'Sauce Labs Backpack';
     const expectedPageUrl = 'https://www.saucedemo.com/inventory.html';
     const inventoryPage = new InventoryPage(page);
