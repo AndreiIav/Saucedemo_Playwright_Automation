@@ -81,7 +81,7 @@ test('Order can be cancelled', async ({ page }) => {
     await checkoutOnePage.clickContinueButton();
     await checkoutTwoPage.clickCancelButton();
 
-    expect(page).toHaveURL(expectedPageUrl);
+    await expect(page).toHaveURL(expectedPageUrl);
 });
 
 test('Order can be completed', async ({ page }) => {
@@ -101,5 +101,5 @@ test('Order can be completed', async ({ page }) => {
     await checkoutOnePage.clickContinueButton();
     await checkoutTwoPage.clickFinishButton();
 
-    expect(page).toHaveURL(expectedPageUrl);
+    await expect(page).toHaveURL(expectedPageUrl);
 });

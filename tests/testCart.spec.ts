@@ -14,7 +14,7 @@ test('Cart page can be accessed', async ({ page }) => {
     await inventoryPage.addItemToCart(testItemName);
     await headerPage.clickCartButton();
 
-    expect(page).toHaveURL(expectedCartURL);
+    await expect(page).toHaveURL(expectedCartURL);
 });
 
 test('Can navigate to Items page from Cart page', async ({ page }) => {
@@ -27,7 +27,7 @@ test('Can navigate to Items page from Cart page', async ({ page }) => {
     await headerPage.clickCartButton();
     await cartPage.clickContinueShoppingButton();
 
-    expect(page).toHaveURL(inventoryUrl);
+    await expect(page).toHaveURL(inventoryUrl);
 });
 
 test('Can navigate to Item page from Cart page', async ({ page }) => {
@@ -40,7 +40,7 @@ test('Can navigate to Item page from Cart page', async ({ page }) => {
     await headerPage.clickCartButton();
     await inventoryPage.clickItemNameLink(testItemName);
 
-    expect(page).toHaveURL(/inventory-item\.html.*/)
+    await expect(page).toHaveURL(/inventory-item\.html.*/)
 });
 
 
@@ -54,7 +54,7 @@ test('Can navigate to Checkout step one page from Cart page', async ({ page }) =
     await headerPage.clickCartButton();
     await cartPage.clickCheckoutButton();
 
-    expect(page).toHaveURL(checkoutUrl);
+    await expect(page).toHaveURL(checkoutUrl);
 });
 
 test('Added Items details match when accessing Cart page', async ({ page }) => {

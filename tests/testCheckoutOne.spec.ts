@@ -18,7 +18,7 @@ test('Checkout step two page can be accessed after all required information has 
         await checkoutOnePage.enterCheckoutInfo();
         await checkoutOnePage.clickContinueButton();
 
-        expect(page).toHaveURL(checkoutOverviewUrl);
+        await expect(page).toHaveURL(checkoutOverviewUrl);
     });
 
 test('Can go back to Cart page', async ({ page }) => {
@@ -33,7 +33,7 @@ test('Can go back to Cart page', async ({ page }) => {
     await cartPage.clickCheckoutButton();
     await checkoutOnePage.clickCancelButton();
 
-    expect(page).toHaveURL(cartUrl);
+    await expect(page).toHaveURL(cartUrl);
 });
 
 test.describe('Test form errors', () => {
