@@ -4,81 +4,77 @@ import { HeaderPage } from './pages/HeaderPage';
 import { CartPage } from './pages/CartPage';
 import { CheckoutOnePage } from './pages/CheckoutOnePage';
 
-test('Checkout step two page can be accessed after all required information has been filled',
-    async ({ page }) => {
-        const checkoutOverviewUrl = 'https://www.saucedemo.com/checkout-step-two.html'
-        const inventoryPage = new InventoryPage(page);
-        const headerPage = new HeaderPage(page);
-        const cartPage = new CartPage(page);
-        const checkoutOnePage = new CheckoutOnePage(page);
+test('Checkout step two page can be accessed after all required information has been filled', async ({
+  page,
+}) => {
+  const checkoutOverviewUrl = 'https://www.saucedemo.com/checkout-step-two.html';
+  const inventoryPage = new InventoryPage(page);
+  const headerPage = new HeaderPage(page);
+  const cartPage = new CartPage(page);
+  const checkoutOnePage = new CheckoutOnePage(page);
 
-        await inventoryPage.goto();
-        await headerPage.clickCartButton();
-        await cartPage.clickCheckoutButton();
-        await checkoutOnePage.enterCheckoutInfo();
-        await checkoutOnePage.clickContinueButton();
+  await inventoryPage.goto();
+  await headerPage.clickCartButton();
+  await cartPage.clickCheckoutButton();
+  await checkoutOnePage.enterCheckoutInfo();
+  await checkoutOnePage.clickContinueButton();
 
-        await expect(page).toHaveURL(checkoutOverviewUrl);
-    });
+  await expect(page).toHaveURL(checkoutOverviewUrl);
+});
 
 test('Can go back to Cart page', async ({ page }) => {
-    const cartUrl = 'https://www.saucedemo.com/cart.html';
-    const inventoryPage = new InventoryPage(page);
-    const headerPage = new HeaderPage(page);
-    const cartPage = new CartPage(page);
-    const checkoutOnePage = new CheckoutOnePage(page);
+  const cartUrl = 'https://www.saucedemo.com/cart.html';
+  const inventoryPage = new InventoryPage(page);
+  const headerPage = new HeaderPage(page);
+  const cartPage = new CartPage(page);
+  const checkoutOnePage = new CheckoutOnePage(page);
 
-    await inventoryPage.goto();
-    await headerPage.clickCartButton();
-    await cartPage.clickCheckoutButton();
-    await checkoutOnePage.clickCancelButton();
+  await inventoryPage.goto();
+  await headerPage.clickCartButton();
+  await cartPage.clickCheckoutButton();
+  await checkoutOnePage.clickCancelButton();
 
-    await expect(page).toHaveURL(cartUrl);
+  await expect(page).toHaveURL(cartUrl);
 });
 
 test.describe('Test form errors', () => {
+  [
+    {
+      fieldTest: 'First Name',
+      firstName: '',
+      lastName: 'lastName',
+      zipPostalCode: 'zipPostalCode',
+      expectedErrorMessage: 'Error: First Name is required',
+    },
+    {
+      fieldTest: 'Last Name',
+      firstName: 'firstName',
+      lastName: '',
+      zipPostalCode: 'zipPostalCode',
+      expectedErrorMessage: 'Error: Last Name is required',
+    },
+    {
+      fieldTest: 'Zip/Postal Code',
+      firstName: 'firstName',
+      lastName: 'lastName',
+      zipPostalCode: '',
+      expectedErrorMessage: 'Error: Postal Code is required',
+    },
+  ].forEach(({ fieldTest, firstName, lastName, zipPostalCode, expectedErrorMessage }) => {
+    test(`Cannot continue if '${fieldTest}' field is not filled`, async ({ page }) => {
+      const inventoryPage = new InventoryPage(page);
+      const headerPage = new HeaderPage(page);
+      const cartPage = new CartPage(page);
+      const checkoutOnePage = new CheckoutOnePage(page);
 
-    [
-        {
-            fieldTest: 'First Name',
-            firstName: '',
-            lastName: 'lastName',
-            zipPostalCode: 'zipPostalCode',
-            expectedErrorMessage: 'Error: First Name is required'
-        },
-        {
-            fieldTest: 'Last Name',
-            firstName: 'firstName',
-            lastName: '',
-            zipPostalCode: 'zipPostalCode',
-            expectedErrorMessage: 'Error: Last Name is required'
-        },
-        {
-            fieldTest: 'Zip/Postal Code',
-            firstName: 'firstName',
-            lastName: 'lastName',
-            zipPostalCode: '',
-            expectedErrorMessage: 'Error: Postal Code is required'
-        },
+      await inventoryPage.goto();
+      await headerPage.clickCartButton();
+      await cartPage.clickCheckoutButton();
+      await checkoutOnePage.enterCheckoutInfo(firstName, lastName, zipPostalCode);
+      await checkoutOnePage.clickContinueButton();
+      const errorText = await checkoutOnePage.getErrorText();
 
-    ].forEach(({ fieldTest, firstName, lastName, zipPostalCode, expectedErrorMessage }) => {
-        test(`Cannot continue if '${fieldTest}' field is not filled`, async ({ page }) => {
-            const inventoryPage = new InventoryPage(page);
-            const headerPage = new HeaderPage(page);
-            const cartPage = new CartPage(page);
-            const checkoutOnePage = new CheckoutOnePage(page);
-
-            await inventoryPage.goto();
-            await headerPage.clickCartButton();
-            await cartPage.clickCheckoutButton();
-            await checkoutOnePage.enterCheckoutInfo(
-                firstName, lastName, zipPostalCode);
-            await checkoutOnePage.clickContinueButton();
-            const errorText = await checkoutOnePage.getErrorText();
-
-            expect(errorText).toBe(expectedErrorMessage);
-        });
-
+      expect(errorText).toBe(expectedErrorMessage);
     });
-
+  });
 });
