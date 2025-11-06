@@ -6,14 +6,13 @@ import { CheckoutOnePage } from './pages/CheckoutOnePage';
 import { CheckoutTwoPage } from './pages/CheckoutTwoPage';
 
 test('User can log out', async ({ page }) => {
-  const logInURL = 'https://www.saucedemo.com/';
   const inventoryPage = new InventoryPage(page);
   const headerPage = new HeaderPage(page);
 
   await inventoryPage.goto();
   await headerPage.logOut();
 
-  await expect(page).toHaveURL(logInURL);
+  await expect(page).toHaveURL('/');
 });
 
 test('Inventory Page name is "Products"', async ({ page }) => {
@@ -34,7 +33,6 @@ test('Cart Page name is "Your Cart"', async ({ page }) => {
 
   await inventoryPage.goto();
   await headerPage.clickCartButton();
-  await page.waitForURL('https://www.saucedemo.com/cart.html');
   const pageTitle = await headerPage.getPageTitle();
 
   expect(pageTitle).toBe(expectedPageName);

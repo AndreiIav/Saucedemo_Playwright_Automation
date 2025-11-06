@@ -4,7 +4,7 @@ import { test, expect } from '@playwright/test';
 test.use({ storageState: { cookies: [], origins: [] } });
 
 test('Login page can be accessed', async ({ page }) => {
-  const response = await page.request.get('https://www.saucedemo.com/');
+  const response = await page.request.get('/');
 
   await expect(response).toBeOK();
 });

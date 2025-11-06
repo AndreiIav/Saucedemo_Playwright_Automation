@@ -2,10 +2,10 @@ import { test, expect } from '@playwright/test';
 import { InventoryPage } from './pages/InventoryPage';
 import { HeaderPage } from './pages/HeaderPage';
 import { CartPage } from './pages/CartPage';
+import pageURLs from './utils/pageURLs';
 
 test('Cart page can be accessed', async ({ page }) => {
   const testItemName = 'Sauce Labs Fleece Jacket';
-  const expectedCartURL = 'https://www.saucedemo.com/cart.html';
   const inventoryPage = new InventoryPage(page);
   const headerPage = new HeaderPage(page);
 
@@ -13,46 +13,45 @@ test('Cart page can be accessed', async ({ page }) => {
   await inventoryPage.addItemToCart(testItemName);
   await headerPage.clickCartButton();
 
-  await expect(page).toHaveURL(expectedCartURL);
+  await expect(page).toHaveURL(pageURLs.cartPage);
 });
 
 test('Can navigate to Items page from Cart page', async ({ page }) => {
   const inventoryPage = new InventoryPage(page);
   const headerPage = new HeaderPage(page);
   const cartPage = new CartPage(page);
-  const inventoryUrl = 'https://www.saucedemo.com/inventory.html';
 
   await inventoryPage.goto();
   await headerPage.clickCartButton();
   await cartPage.clickContinueShoppingButton();
 
-  await expect(page).toHaveURL(inventoryUrl);
+  await expect(page).toHaveURL(pageURLs.itemsPage);
 });
 
 test('Can navigate to Item page from Cart page', async ({ page }) => {
   const testItemName = 'Sauce Labs Backpack';
   const inventoryPage = new InventoryPage(page);
   const headerPage = new HeaderPage(page);
+  const expectedUrlPattern = new RegExp(`${pageURLs.itemPage}\\?id=\\d+$`);
 
   await inventoryPage.goto();
   await inventoryPage.addItemToCart(testItemName);
   await headerPage.clickCartButton();
   await inventoryPage.clickItemNameLink(testItemName);
 
-  await expect(page).toHaveURL(/inventory-item\.html.*/);
+  await expect(page).toHaveURL(expectedUrlPattern);
 });
 
 test('Can navigate to Checkout step one page from Cart page', async ({ page }) => {
   const inventoryPage = new InventoryPage(page);
   const headerPage = new HeaderPage(page);
   const cartPage = new CartPage(page);
-  const checkoutUrl = 'https://www.saucedemo.com/checkout-step-one.html';
 
   await inventoryPage.goto();
   await headerPage.clickCartButton();
   await cartPage.clickCheckoutButton();
 
-  await expect(page).toHaveURL(checkoutUrl);
+  await expect(page).toHaveURL(pageURLs.checkoutStepOne);
 });
 
 test('Added Items details match when accessing Cart page', async ({ page }) => {

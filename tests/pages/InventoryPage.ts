@@ -1,6 +1,7 @@
 import { type Page, type Locator } from '@playwright/test';
 import { ItemCardPage } from './ItemCardPage';
 import { extractNumberFromString } from '../utils/price.utils';
+import pageURLs from '../utils/pageURLs';
 
 interface Item {
   itemName: string;
@@ -21,7 +22,7 @@ export class InventoryPage {
   }
 
   async goto() {
-    await this.page.goto('https://www.saucedemo.com/inventory.html');
+    await this.page.goto(pageURLs.itemsPage);
   }
 
   async getAllItemsOnPage(): Promise<Item[]> {

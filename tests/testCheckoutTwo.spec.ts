@@ -5,6 +5,7 @@ import { CheckoutOnePage } from './pages/CheckoutOnePage';
 import { HeaderPage } from './pages/HeaderPage';
 import { CheckoutTwoPage } from './pages/CheckoutTwoPage';
 import { calculateTax, calculateTotal } from './utils/price.utils';
+import pageURLs from './utils/pageURLs';
 
 test('Added Items details match when accessing Checkout page', async ({ page }) => {
   const testItemNames = ['Sauce Labs Backpack', 'Sauce Labs Bike Light', 'Sauce Labs Bolt T-Shirt'];
@@ -62,7 +63,6 @@ test('Cart Items Total is calculated correctly', async ({ page }) => {
 
 test('Order can be cancelled', async ({ page }) => {
   const testItemNames = 'Sauce Labs Backpack';
-  const expectedPageUrl = 'https://www.saucedemo.com/inventory.html';
   const inventoryPage = new InventoryPage(page);
   const headerPage = new HeaderPage(page);
   const cartPage = new CartPage(page);
@@ -77,12 +77,11 @@ test('Order can be cancelled', async ({ page }) => {
   await checkoutOnePage.clickContinueButton();
   await checkoutTwoPage.clickCancelButton();
 
-  await expect(page).toHaveURL(expectedPageUrl);
+  await expect(page).toHaveURL(pageURLs.itemsPage);
 });
 
 test('Order can be completed', async ({ page }) => {
   const testItemNames = 'Sauce Labs Backpack';
-  const expectedPageUrl = 'https://www.saucedemo.com/checkout-complete.html';
   const inventoryPage = new InventoryPage(page);
   const headerPage = new HeaderPage(page);
   const cartPage = new CartPage(page);
@@ -97,5 +96,5 @@ test('Order can be completed', async ({ page }) => {
   await checkoutOnePage.clickContinueButton();
   await checkoutTwoPage.clickFinishButton();
 
-  await expect(page).toHaveURL(expectedPageUrl);
+  await expect(page).toHaveURL(pageURLs.checkoutComplete);
 });

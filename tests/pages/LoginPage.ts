@@ -15,11 +15,6 @@ export class LoginPage {
     this.loginErrorMessage = page.getByTestId('error');
   }
 
-  async goto(pagePath: string = '') {
-    const url = pagePath ? `/${pagePath}` : '/';
-    await this.page.goto(url);
-  }
-
   async login(username: string, password: string): Promise<void> {
     await this.usernameField.fill(username);
     await this.passwordField.fill(password);

@@ -2,66 +2,62 @@ import { test, expect } from '@playwright/test';
 import { LoginPage } from './pages/LoginPage';
 import logInErrorMessages from './test-data/logInErrorMessages';
 import users from './test-data/users';
+import pageURLs from './utils/pageURLs';
 
 // Reset storage state for this file to avoid being authenticated
 test.use({ storageState: { cookies: [], origins: [] } });
 
 test.describe('User Login Tests', () => {
-  const URLs = {
-    loginURL: 'https://www.saucedemo.com/',
-    loggedInURL: 'https://www.saucedemo.com/inventory.html',
-  };
-
   test('User can Login with valid credentials', async ({ page }) => {
     const loginPage = new LoginPage(page);
-    await loginPage.goto();
+    await page.goto('/');
 
     await loginPage.login(users.standardUser.username, users.standardUser.password);
 
-    await expect(page).toHaveURL(URLs.loggedInURL);
+    await expect(page).toHaveURL(pageURLs.itemsPage);
   });
 
   test('User cannot login with invalid username', async ({ page }) => {
     const loginPage = new LoginPage(page);
-    await loginPage.goto();
+    await page.goto('/');
 
     await loginPage.login(users.invalidUser.username, users.standardUser.password);
     const errorMessage = await loginPage.getLoginErrorMessage();
 
-    await expect(page).toHaveURL(URLs.loginURL);
+    await expect(page).toHaveURL('/');
     expect(errorMessage).toContain(logInErrorMessages.wrongUserOrPassErrorMessage);
   });
 
   test('User cannot login with invalid password', async ({ page }) => {
     const loginPage = new LoginPage(page);
-    await loginPage.goto();
+    await page.goto('/');
 
     await loginPage.login(users.standardUser.password, users.invalidUser.password);
     const errorMessage = await loginPage.getLoginErrorMessage();
 
-    await expect(page).toHaveURL(URLs.loginURL);
+    await expect(page).toHaveURL('/');
     expect(errorMessage).toContain(logInErrorMessages.wrongUserOrPassErrorMessage);
   });
 
   test('User cannot login with missing username', async ({ page }) => {
     const loginPage = new LoginPage(page);
-    await loginPage.goto();
+    await page.goto('/');
 
     await loginPage.login('', users.invalidUser.password);
     const errorMessage = await loginPage.getLoginErrorMessage();
 
-    await expect(page).toHaveURL(URLs.loginURL);
+    await expect(page).toHaveURL('/');
     expect(errorMessage).toContain(logInErrorMessages.missingUsernameErrorMessage);
   });
 
   test('User cannot login with missing password', async ({ page }) => {
     const loginPage = new LoginPage(page);
-    await loginPage.goto();
+    await page.goto('/');
 
     await loginPage.login(users.standardUser.password, '');
     const errorMessage = await loginPage.getLoginErrorMessage();
 
-    await expect(page).toHaveURL(URLs.loginURL);
+    await expect(page).toHaveURL('/');
     expect(errorMessage).toContain(logInErrorMessages.missingPassErrorMessage);
   });
 });
@@ -69,21 +65,21 @@ test.describe('User Login Tests', () => {
 test.describe('Cannot access app pages without being logged in', () => {
   [
     {
-      pageName: 'inventory.html',
+      pageName: pageURLs.itemsPage,
       expectedError: logInErrorMessages.accessInventoryPageWithoutLoging,
     },
     {
-      pageName: 'inventory-item.html?id=4',
+      pageName: pageURLs.itemPage,
       expectedError: logInErrorMessages.accessInventoryPageItemWithoutLoging,
     },
     {
-      pageName: 'cart.html',
+      pageName: pageURLs.cartPage,
       expectedError: logInErrorMessages.accessCartPageWithoutLoging,
     },
   ].forEach(({ pageName, expectedError }) => {
     test(`User cannot access '${pageName}' without being logged in`, async ({ page }) => {
       const loginPage = new LoginPage(page);
-      await loginPage.goto(pageName);
+      await page.goto(pageName);
 
       const errorMessage = await loginPage.getLoginErrorMessage();
 

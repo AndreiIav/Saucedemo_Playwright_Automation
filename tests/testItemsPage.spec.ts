@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 import { InventoryPage } from './pages/InventoryPage';
 import { HeaderPage } from './pages/HeaderPage';
 import { ItemPage } from './pages/ItemPage';
+import pageURLs from './utils/pageURLs';
 
 test('Item can be added to cart', async ({ page }) => {
   const testItemName = 'Sauce Labs Backpack';
@@ -120,11 +121,12 @@ test.describe('Item page tests', () => {
   test('Item page can be accessed for an Item', async ({ page }) => {
     const testItemName = 'Sauce Labs Backpack';
     const inventoryPage = new InventoryPage(page);
+    const expectedUrlPattern = new RegExp(`${pageURLs.itemPage}\\?id=\\d+$`);
 
     await inventoryPage.goto();
     await inventoryPage.clickItemNameLink(testItemName);
 
-    await expect(page).toHaveURL(/inventory-item\.html.*/);
+    await expect(page).toHaveURL(expectedUrlPattern);
   });
 
   test('Item details match when accessing the Item page', async ({ page }) => {
@@ -178,12 +180,11 @@ test.describe('Item page tests', () => {
     const testItemName = 'Sauce Labs Onesie';
     const inventoryPage = new InventoryPage(page);
     const headerPage = new HeaderPage(page);
-    const itemsPageUrl = 'https://www.saucedemo.com/inventory.html';
 
     await inventoryPage.goto();
     await inventoryPage.clickItemNameLink(testItemName);
     await headerPage.clickBackToProductsButton();
 
-    await expect(page).toHaveURL(itemsPageUrl);
+    await expect(page).toHaveURL(pageURLs.itemsPage);
   });
 });

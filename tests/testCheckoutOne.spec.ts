@@ -3,11 +3,9 @@ import { InventoryPage } from './pages/InventoryPage';
 import { HeaderPage } from './pages/HeaderPage';
 import { CartPage } from './pages/CartPage';
 import { CheckoutOnePage } from './pages/CheckoutOnePage';
+import pageURLs from './utils/pageURLs';
 
-test('Checkout step two page can be accessed after all required information has been filled', async ({
-  page,
-}) => {
-  const checkoutOverviewUrl = 'https://www.saucedemo.com/checkout-step-two.html';
+test('Checkout step two page can be accessed', async ({ page }) => {
   const inventoryPage = new InventoryPage(page);
   const headerPage = new HeaderPage(page);
   const cartPage = new CartPage(page);
@@ -19,11 +17,10 @@ test('Checkout step two page can be accessed after all required information has 
   await checkoutOnePage.enterCheckoutInfo();
   await checkoutOnePage.clickContinueButton();
 
-  await expect(page).toHaveURL(checkoutOverviewUrl);
+  await expect(page).toHaveURL(pageURLs.checkoutStepTwo);
 });
 
 test('Can go back to Cart page', async ({ page }) => {
-  const cartUrl = 'https://www.saucedemo.com/cart.html';
   const inventoryPage = new InventoryPage(page);
   const headerPage = new HeaderPage(page);
   const cartPage = new CartPage(page);
@@ -34,7 +31,7 @@ test('Can go back to Cart page', async ({ page }) => {
   await cartPage.clickCheckoutButton();
   await checkoutOnePage.clickCancelButton();
 
-  await expect(page).toHaveURL(cartUrl);
+  await expect(page).toHaveURL(pageURLs.cartPage);
 });
 
 test.describe('Test form errors', () => {
