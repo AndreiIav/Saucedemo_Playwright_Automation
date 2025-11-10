@@ -15,6 +15,10 @@ export class LoginPage {
     this.loginErrorMessage = page.getByTestId('error');
   }
 
+  async goto() {
+    await this.page.goto('/');
+  }
+
   async login(username: string, password: string): Promise<void> {
     await this.usernameField.fill(username);
     await this.passwordField.fill(password);

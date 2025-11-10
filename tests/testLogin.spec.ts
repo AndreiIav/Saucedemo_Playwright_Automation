@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from './fixtures/fixtures'
 import { LoginPage } from './pages/LoginPage';
 import logInErrorMessages from './test-data/logInErrorMessages';
 import users from './test-data/users';
@@ -8,19 +9,13 @@ import pageURLs from './utils/pageURLs';
 test.use({ storageState: { cookies: [], origins: [] } });
 
 test.describe('User Login Tests', () => {
-  test('User can Login with valid credentials', async ({ page }) => {
-    const loginPage = new LoginPage(page);
-    await page.goto('/');
-
+  test('User can Login with valid credentials', async ({ loginPage, page }) => {
     await loginPage.login(users.standardUser.username, users.standardUser.password);
 
     await expect(page).toHaveURL(pageURLs.itemsPage);
   });
 
-  test('User cannot login with invalid username', async ({ page }) => {
-    const loginPage = new LoginPage(page);
-    await page.goto('/');
-
+  test('User cannot login with invalid username', async ({ loginPage, page }) => {
     await loginPage.login(users.invalidUser.username, users.standardUser.password);
     const errorMessage = await loginPage.getLoginErrorMessage();
 
@@ -28,10 +23,7 @@ test.describe('User Login Tests', () => {
     expect(errorMessage).toContain(logInErrorMessages.wrongUserOrPassErrorMessage);
   });
 
-  test('User cannot login with invalid password', async ({ page }) => {
-    const loginPage = new LoginPage(page);
-    await page.goto('/');
-
+  test('User cannot login with invalid password', async ({ loginPage, page }) => {
     await loginPage.login(users.standardUser.password, users.invalidUser.password);
     const errorMessage = await loginPage.getLoginErrorMessage();
 
@@ -39,10 +31,7 @@ test.describe('User Login Tests', () => {
     expect(errorMessage).toContain(logInErrorMessages.wrongUserOrPassErrorMessage);
   });
 
-  test('User cannot login with missing username', async ({ page }) => {
-    const loginPage = new LoginPage(page);
-    await page.goto('/');
-
+  test('User cannot login with missing username', async ({ loginPage, page }) => {
     await loginPage.login('', users.invalidUser.password);
     const errorMessage = await loginPage.getLoginErrorMessage();
 
@@ -50,10 +39,7 @@ test.describe('User Login Tests', () => {
     expect(errorMessage).toContain(logInErrorMessages.missingUsernameErrorMessage);
   });
 
-  test('User cannot login with missing password', async ({ page }) => {
-    const loginPage = new LoginPage(page);
-    await page.goto('/');
-
+  test('User cannot login with missing password', async ({loginPage, page }) => {
     await loginPage.login(users.standardUser.password, '');
     const errorMessage = await loginPage.getLoginErrorMessage();
 
