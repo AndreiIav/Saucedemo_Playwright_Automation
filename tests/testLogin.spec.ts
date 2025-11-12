@@ -1,5 +1,5 @@
 import { expect } from '@playwright/test';
-import { test } from './fixtures/fixtures'
+import { test } from './fixtures/fixtures';
 import { LoginPage } from './pages/LoginPage';
 import logInErrorMessages from './test-data/logInErrorMessages';
 import users from './test-data/users';
@@ -39,7 +39,7 @@ test.describe('User Login Tests', () => {
     expect(errorMessage).toContain(logInErrorMessages.missingUsernameErrorMessage);
   });
 
-  test('User cannot login with missing password', async ({loginPage, page }) => {
+  test('User cannot login with missing password', async ({ loginPage, page }) => {
     await loginPage.login(users.standardUser.password, '');
     const errorMessage = await loginPage.getLoginErrorMessage();
 
