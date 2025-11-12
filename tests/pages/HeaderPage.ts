@@ -42,7 +42,8 @@ export class HeaderPage {
   }
 
   async getShoppingCartCount() {
-    return this.shoppingCartBadge.innerText();
+    const res = await this.shoppingCartBadge.innerText();
+    return Number(res);
   }
 
   async getPageTitle() {

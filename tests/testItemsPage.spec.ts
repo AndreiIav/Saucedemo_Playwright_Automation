@@ -4,19 +4,25 @@ import { HeaderPage } from './pages/HeaderPage';
 import { ItemPage } from './pages/ItemPage';
 import pageURLs from './utils/pageURLs';
 
-test('Item can be added to cart', async ({ page }) => {
-  const testItemName = 'Sauce Labs Backpack';
+test('Items can be added to cart', async ({ page }) => {
+  const testItemNames = [
+    'Sauce Labs Backpack',
+    'Sauce Labs Bike Light',
+    'Sauce Labs Bolt T-Shirt',
+    'Sauce Labs Fleece Jacket',
+  ];
   const inventoryPage = new InventoryPage(page);
   const headerPage = new HeaderPage(page);
-  const expectedShoppingCartCount = '1';
 
   await inventoryPage.goto();
-  const item = await inventoryPage.addItemToCart(testItemName);
-  const itemRemoveButton = inventoryPage.getItemButton(item, 'Remove');
-  const shoppingCartCount = await headerPage.getShoppingCartCount();
 
-  await expect(page.getByTestId(itemRemoveButton)).toBeEnabled();
-  expect(shoppingCartCount).toBe(expectedShoppingCartCount);
+  for (let i = 0; i < testItemNames.length; i++) {
+    const item = await inventoryPage.addItemToCart(testItemNames[i]);
+    const shoppingCartCount = await headerPage.getShoppingCartCount();
+
+    expect(shoppingCartCount).toBe(i + 1);
+    await expect(page.getByTestId(inventoryPage.getItemButton(item, 'Remove'))).toBeEnabled();
+  }
 });
 
 test('Item can be removed from cart', async ({ page }) => {
@@ -31,8 +37,42 @@ test('Item can be removed from cart', async ({ page }) => {
   // remove item from cart
   await inventoryPage.removeItemFromCart(testItemName);
 
+  // check that the 'Add to cart' button is enabled for the removed item and
+  // that the Cart counter is not visible
   await expect(page.getByTestId(itemAddButton)).toBeEnabled();
   await expect(headerPage.shoppingCartBadge).toBeHidden();
+});
+
+test('Items can be removed from cart', async ({ page }) => {
+  const testItemNames = [
+    'Sauce Labs Backpack',
+    'Sauce Labs Bike Light',
+    'Sauce Labs Bolt T-Shirt',
+    'Sauce Labs Fleece Jacket',
+  ];
+  const inventoryPage = new InventoryPage(page);
+  const headerPage = new HeaderPage(page);
+
+  await inventoryPage.goto();
+  // add items to cart
+  for (let i = 0; i < testItemNames.length; i++) {
+    await inventoryPage.addItemToCart(testItemNames[i]);
+  }
+
+  let shoppingCartCount = await headerPage.getShoppingCartCount();
+  expect(shoppingCartCount).toBe(testItemNames.length);
+
+  // remove all items from cart except one and check the cart counter decreases
+  // and that the 'Add to cart' button is enabled for the removed items
+  for (let i = 0; i < testItemNames.length - 1; i++) {
+    const item = await inventoryPage.removeItemFromCart(testItemNames[i]);
+    const itemAddButton = inventoryPage.getItemButton(item, 'addToCart');
+    const updatedShoppingCartCount = await headerPage.getShoppingCartCount();
+    shoppingCartCount = shoppingCartCount - 1;
+
+    expect(updatedShoppingCartCount).toBe(shoppingCartCount);
+    await expect(page.getByTestId(itemAddButton)).toBeEnabled();
+  }
 });
 
 [
@@ -146,7 +186,7 @@ test.describe('Item page tests', () => {
     const inventoryPage = new InventoryPage(page);
     const headerPage = new HeaderPage(page);
     const itemPage = new ItemPage(page);
-    const expectedShoppingCartCount = '1';
+    const expectedShoppingCartCount = 1;
 
     await inventoryPage.goto();
     await inventoryPage.clickItemNameLink(testItemName);
@@ -162,7 +202,7 @@ test.describe('Item page tests', () => {
     const inventoryPage = new InventoryPage(page);
     const headerPage = new HeaderPage(page);
     const itemPage = new ItemPage(page);
-    const expectedShoppingCartCount = '1';
+    const expectedShoppingCartCount = 1;
 
     await inventoryPage.goto();
     await inventoryPage.clickItemNameLink(testItemName);
