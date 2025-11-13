@@ -96,7 +96,8 @@ export class InventoryPage {
   }
 
   getItemButton(item: Item, buttonType: 'addToCart' | 'Remove') {
-    return buttonType === 'addToCart' ? item.itemAddtoCartButton : item.itemRemoveButton;
+    const button = buttonType === 'addToCart' ? item.itemAddtoCartButton : item.itemRemoveButton;
+    return this.page.getByTestId(button);
   }
 
   getItemAtribute(item: Item, key: keyof Item) {

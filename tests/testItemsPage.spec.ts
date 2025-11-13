@@ -19,9 +19,10 @@ test('Items can be added to cart', async ({ page }) => {
   for (let i = 0; i < testItemNames.length; i++) {
     const item = await inventoryPage.addItemToCart(testItemNames[i]);
     const shoppingCartCount = await headerPage.getShoppingCartCount();
+    const itemRemoveButton = inventoryPage.getItemButton(item, 'Remove');
 
     expect(shoppingCartCount).toBe(i + 1);
-    await expect(page.getByTestId(inventoryPage.getItemButton(item, 'Remove'))).toBeEnabled();
+    await expect(itemRemoveButton).toBeEnabled();
   }
 });
 
@@ -39,7 +40,7 @@ test('Item can be removed from cart', async ({ page }) => {
 
   // check that the 'Add to cart' button is enabled for the removed item and
   // that the Cart counter is not visible
-  await expect(page.getByTestId(itemAddButton)).toBeEnabled();
+  await expect(itemAddButton).toBeEnabled();
   await expect(headerPage.shoppingCartBadge).toBeHidden();
 });
 
@@ -71,7 +72,7 @@ test('Items can be removed from cart', async ({ page }) => {
     shoppingCartCount = shoppingCartCount - 1;
 
     expect(updatedShoppingCartCount).toBe(shoppingCartCount);
-    await expect(page.getByTestId(itemAddButton)).toBeEnabled();
+    await expect(itemAddButton).toBeEnabled();
   }
 });
 
