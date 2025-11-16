@@ -3,24 +3,24 @@ import { LoginPage } from '../pages/LoginPage';
 import { InventoryPage } from '../pages/InventoryPage';
 import { HeaderPage } from '../pages/HeaderPage';
 import { ItemPage } from '../pages/ItemPage';
+import { CartPage } from '../pages/CartPage';
 
 type MyFixtures = {
   loginPage: LoginPage;
   inventoryPage: InventoryPage;
   headerPage: HeaderPage;
   itemPage: ItemPage;
+  cartPage: CartPage;
 };
 
 export const test = base.extend<MyFixtures>({
   loginPage: async ({ page }, use) => {
     const loginPage = new LoginPage(page);
-    await loginPage.goto();
     await use(loginPage);
   },
 
   inventoryPage: async ({ page }, use) => {
     const inventoryPage = new InventoryPage(page);
-    await inventoryPage.goto();
     await use(inventoryPage);
   },
 
@@ -32,5 +32,10 @@ export const test = base.extend<MyFixtures>({
   itemPage: async ({ page }, use) => {
     const itemPage = new ItemPage(page);
     await use(itemPage);
+  },
+
+  cartPage: async ({ page }, use) => {
+    const cartPage = new CartPage(page);
+    await use(cartPage);
   },
 });

@@ -10,6 +10,7 @@ test('Items can be added to cart', async ({ inventoryPage, headerPage }) => {
     'Sauce Labs Fleece Jacket',
   ];
 
+  await inventoryPage.goto();
   for (let i = 0; i < testItemNames.length; i++) {
     const item = await inventoryPage.addItemToCart(testItemNames[i]);
     const shoppingCartCount = await headerPage.getShoppingCartCount();
@@ -23,6 +24,7 @@ test('Items can be added to cart', async ({ inventoryPage, headerPage }) => {
 test('Item can be removed from cart', async ({ inventoryPage, headerPage }) => {
   const testItemName = 'Test.allTheThings() T-Shirt (Red)';
 
+  await inventoryPage.goto();
   // add item to cart
   const item = await inventoryPage.addItemToCart(testItemName);
   const itemAddButton = inventoryPage.getItemButton(item, 'addToCart');
@@ -42,6 +44,8 @@ test('Items can be removed from cart', async ({ inventoryPage, headerPage }) => 
     'Sauce Labs Bolt T-Shirt',
     'Sauce Labs Fleece Jacket',
   ];
+
+  await inventoryPage.goto();
   // add items to cart
   for (let i = 0; i < testItemNames.length; i++) {
     await inventoryPage.addItemToCart(testItemNames[i]);
@@ -63,6 +67,16 @@ test('Items can be removed from cart', async ({ inventoryPage, headerPage }) => 
   }
 });
 
+test('Can navigate to Cart page', async ({ inventoryPage, headerPage, page }) => {
+  const testItemName = 'Sauce Labs Fleece Jacket';
+
+  await inventoryPage.goto();
+  await inventoryPage.addItemToCart(testItemName);
+  await headerPage.clickCartButton();
+
+  await expect(page).toHaveURL(pageURLs.cartPage);
+});
+
 [
   {
     sortOption: 'za',
@@ -82,9 +96,11 @@ test('Items can be removed from cart', async ({ inventoryPage, headerPage }) => 
   },
 ].forEach(({ sortOption, expectedSortText }) => {
   test(`Sort text '${expectedSortText}' updates when the option is selected`, async ({
-    inventoryPage: _inventoryPage,
+    inventoryPage,
     headerPage,
   }) => {
+    await inventoryPage.goto();
+
     await headerPage.selectSortOption(sortOption);
     const sortText = await headerPage.getSortActiveOption();
 
@@ -93,6 +109,7 @@ test('Items can be removed from cart', async ({ inventoryPage, headerPage }) => 
 });
 
 test('Items are sorted A to Z', async ({ inventoryPage, headerPage }) => {
+  await inventoryPage.goto();
   const itemNames = await inventoryPage.getNameOfAllItemsOnPage();
   await headerPage.selectSortOption('az');
   const itemNamesSorted = await inventoryPage.getNameOfAllItemsOnPage();
@@ -102,6 +119,7 @@ test('Items are sorted A to Z', async ({ inventoryPage, headerPage }) => {
 });
 
 test('Items are sorted Z to A', async ({ inventoryPage, headerPage }) => {
+  await inventoryPage.goto();
   const itemNames = await inventoryPage.getNameOfAllItemsOnPage();
   await headerPage.selectSortOption('za');
   const itemNamesSorted = await inventoryPage.getNameOfAllItemsOnPage();
@@ -111,6 +129,7 @@ test('Items are sorted Z to A', async ({ inventoryPage, headerPage }) => {
 });
 
 test('Items are sorted by Price low to high', async ({ inventoryPage, headerPage }) => {
+  await inventoryPage.goto();
   const itemPrices = await inventoryPage.getPriceOfAllItemsOnPage();
   await headerPage.selectSortOption('lohi');
   const itemPricesSorted = await inventoryPage.getPriceOfAllItemsOnPage();
@@ -120,6 +139,7 @@ test('Items are sorted by Price low to high', async ({ inventoryPage, headerPage
 });
 
 test('Items are sorted by Price high to low', async ({ inventoryPage, headerPage }) => {
+  await inventoryPage.goto();
   const itemPrices = await inventoryPage.getPriceOfAllItemsOnPage();
   await headerPage.selectSortOption('hilo');
   const itemPricesSorted = await inventoryPage.getPriceOfAllItemsOnPage();
@@ -133,6 +153,7 @@ test.describe('Item page tests', () => {
     const testItemName = 'Sauce Labs Backpack';
     const expectedUrlPattern = new RegExp(`${pageURLs.itemPage}\\?id=\\d+$`);
 
+    await inventoryPage.goto();
     await inventoryPage.clickItemNameLink(testItemName);
 
     await expect(page).toHaveURL(expectedUrlPattern);
@@ -141,6 +162,7 @@ test.describe('Item page tests', () => {
   test('Item details match when accessing the Item page', async ({ inventoryPage }) => {
     const testItemName = 'Sauce Labs Backpack';
 
+    await inventoryPage.goto();
     const testItemCard = await inventoryPage.getOneItemByName(testItemName);
     await inventoryPage.clickItemNameLink(testItemName);
     const testClickedItemCard = await inventoryPage.getOneItemByName(testItemName);
@@ -156,6 +178,7 @@ test.describe('Item page tests', () => {
     const testItemName = 'Sauce Labs Backpack';
     const expectedShoppingCartCount = 1;
 
+    await inventoryPage.goto();
     await inventoryPage.clickItemNameLink(testItemName);
     await itemPage.clickAddtoCartButton();
     const shoppingCartCount = await headerPage.getShoppingCartCount();
@@ -172,6 +195,7 @@ test.describe('Item page tests', () => {
     const testItemName = 'Sauce Labs Backpack';
     const expectedShoppingCartCount = 1;
 
+    await inventoryPage.goto();
     await inventoryPage.clickItemNameLink(testItemName);
     await itemPage.clickAddtoCartButton();
     await expect(itemPage.itemRemoveButton).toBeEnabled();
@@ -186,6 +210,7 @@ test.describe('Item page tests', () => {
   test('Can navigate to Items page from Item page', async ({ inventoryPage, headerPage, page }) => {
     const testItemName = 'Sauce Labs Onesie';
 
+    await inventoryPage.goto();
     await inventoryPage.clickItemNameLink(testItemName);
     await headerPage.clickBackToProductsButton();
 
