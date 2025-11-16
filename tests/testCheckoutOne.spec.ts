@@ -1,16 +1,14 @@
-import { test, expect } from '@playwright/test';
-import { InventoryPage } from './pages/InventoryPage';
-import { HeaderPage } from './pages/HeaderPage';
-import { CartPage } from './pages/CartPage';
-import { CheckoutOnePage } from './pages/CheckoutOnePage';
+import { expect } from '@playwright/test';
 import pageURLs from './utils/pageURLs';
+import { test } from './fixtures/fixtures';
 
-test('Checkout step two page can be accessed', async ({ page }) => {
-  const inventoryPage = new InventoryPage(page);
-  const headerPage = new HeaderPage(page);
-  const cartPage = new CartPage(page);
-  const checkoutOnePage = new CheckoutOnePage(page);
-
+test('Can navigate to Checkout step two page', async ({
+  inventoryPage,
+  headerPage,
+  cartPage,
+  checkoutOnePage,
+  page,
+}) => {
   await inventoryPage.goto();
   await headerPage.clickCartButton();
   await cartPage.clickCheckoutButton();
@@ -20,12 +18,13 @@ test('Checkout step two page can be accessed', async ({ page }) => {
   await expect(page).toHaveURL(pageURLs.checkoutStepTwo);
 });
 
-test('Can go back to Cart page', async ({ page }) => {
-  const inventoryPage = new InventoryPage(page);
-  const headerPage = new HeaderPage(page);
-  const cartPage = new CartPage(page);
-  const checkoutOnePage = new CheckoutOnePage(page);
-
+test('Can navigate to Cart page by cancelling checkout', async ({
+  inventoryPage,
+  headerPage,
+  cartPage,
+  checkoutOnePage,
+  page,
+}) => {
   await inventoryPage.goto();
   await headerPage.clickCartButton();
   await cartPage.clickCheckoutButton();
@@ -58,12 +57,13 @@ test.describe('Test form errors', () => {
       expectedErrorMessage: 'Error: Postal Code is required',
     },
   ].forEach(({ fieldTest, firstName, lastName, zipPostalCode, expectedErrorMessage }) => {
-    test(`Cannot continue if '${fieldTest}' field is not filled`, async ({ page }) => {
-      const inventoryPage = new InventoryPage(page);
-      const headerPage = new HeaderPage(page);
-      const cartPage = new CartPage(page);
-      const checkoutOnePage = new CheckoutOnePage(page);
-
+    test(`Cannot continue to Checkout step two page if '${fieldTest}' field is not filled`, async ({
+      inventoryPage,
+      headerPage,
+      cartPage,
+      checkoutOnePage,
+      page,
+    }) => {
       await inventoryPage.goto();
       await headerPage.clickCartButton();
       await cartPage.clickCheckoutButton();
@@ -72,6 +72,7 @@ test.describe('Test form errors', () => {
       const errorText = await checkoutOnePage.getErrorText();
 
       expect(errorText).toBe(expectedErrorMessage);
+      await expect(page).toHaveURL(pageURLs.checkoutStepOne);
     });
   });
 });
