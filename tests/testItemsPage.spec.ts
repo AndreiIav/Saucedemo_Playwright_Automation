@@ -1,20 +1,17 @@
-import { test, expect } from '@playwright/test';
+import { expect } from '@playwright/test';
 import { InventoryPage } from './pages/InventoryPage';
 import { HeaderPage } from './pages/HeaderPage';
 import { ItemPage } from './pages/ItemPage';
 import pageURLs from './utils/pageURLs';
+import { test } from './fixtures/fixtures';
 
-test('Items can be added to cart', async ({ page }) => {
+test('Items can be added to cart', async ({ inventoryPage, headerPage }) => {
   const testItemNames = [
     'Sauce Labs Backpack',
     'Sauce Labs Bike Light',
     'Sauce Labs Bolt T-Shirt',
     'Sauce Labs Fleece Jacket',
   ];
-  const inventoryPage = new InventoryPage(page);
-  const headerPage = new HeaderPage(page);
-
-  await inventoryPage.goto();
 
   for (let i = 0; i < testItemNames.length; i++) {
     const item = await inventoryPage.addItemToCart(testItemNames[i]);
@@ -26,12 +23,9 @@ test('Items can be added to cart', async ({ page }) => {
   }
 });
 
-test('Item can be removed from cart', async ({ page }) => {
+test('Item can be removed from cart', async ({ inventoryPage, headerPage }) => {
   const testItemName = 'Test.allTheThings() T-Shirt (Red)';
-  const inventoryPage = new InventoryPage(page);
-  const headerPage = new HeaderPage(page);
 
-  await inventoryPage.goto();
   // add item to cart
   const item = await inventoryPage.addItemToCart(testItemName);
   const itemAddButton = inventoryPage.getItemButton(item, 'addToCart');
@@ -44,17 +38,13 @@ test('Item can be removed from cart', async ({ page }) => {
   await expect(headerPage.shoppingCartBadge).toBeHidden();
 });
 
-test('Items can be removed from cart', async ({ page }) => {
+test('Items can be removed from cart', async ({ inventoryPage, headerPage }) => {
   const testItemNames = [
     'Sauce Labs Backpack',
     'Sauce Labs Bike Light',
     'Sauce Labs Bolt T-Shirt',
     'Sauce Labs Fleece Jacket',
   ];
-  const inventoryPage = new InventoryPage(page);
-  const headerPage = new HeaderPage(page);
-
-  await inventoryPage.goto();
   // add items to cart
   for (let i = 0; i < testItemNames.length; i++) {
     await inventoryPage.addItemToCart(testItemNames[i]);
@@ -94,11 +84,10 @@ test('Items can be removed from cart', async ({ page }) => {
     expectedSortText: 'Price (high to low)',
   },
 ].forEach(({ sortOption, expectedSortText }) => {
-  test(`Sort text '${expectedSortText}' updates when the option is selected`, async ({ page }) => {
-    const inventoryPage = new InventoryPage(page);
-    const headerPage = new HeaderPage(page);
-
-    await inventoryPage.goto();
+  test(`Sort text '${expectedSortText}' updates when the option is selected`, async ({
+    inventoryPage: _inventoryPage,
+    headerPage,
+  }) => {
     await headerPage.selectSortOption(sortOption);
     const sortText = await headerPage.getSortActiveOption();
 
@@ -106,11 +95,7 @@ test('Items can be removed from cart', async ({ page }) => {
   });
 });
 
-test('Items are sorted A to Z', async ({ page }) => {
-  const inventoryPage = new InventoryPage(page);
-  const headerPage = new HeaderPage(page);
-
-  await inventoryPage.goto();
+test('Items are sorted A to Z', async ({ inventoryPage, headerPage }) => {
   const itemNames = await inventoryPage.getNameOfAllItemsOnPage();
   await headerPage.selectSortOption('az');
   const itemNamesSorted = await inventoryPage.getNameOfAllItemsOnPage();
@@ -119,11 +104,7 @@ test('Items are sorted A to Z', async ({ page }) => {
   expect(itemNames).toEqual(itemNamesSorted);
 });
 
-test('Items are sorted Z to A', async ({ page }) => {
-  const inventoryPage = new InventoryPage(page);
-  const headerPage = new HeaderPage(page);
-
-  await inventoryPage.goto();
+test('Items are sorted Z to A', async ({ inventoryPage, headerPage }) => {
   const itemNames = await inventoryPage.getNameOfAllItemsOnPage();
   await headerPage.selectSortOption('za');
   const itemNamesSorted = await inventoryPage.getNameOfAllItemsOnPage();
@@ -132,11 +113,7 @@ test('Items are sorted Z to A', async ({ page }) => {
   expect(itemNames).toEqual(itemNamesSorted);
 });
 
-test('Items are sorted by Price low to high', async ({ page }) => {
-  const inventoryPage = new InventoryPage(page);
-  const headerPage = new HeaderPage(page);
-
-  await inventoryPage.goto();
+test('Items are sorted by Price low to high', async ({ inventoryPage, headerPage }) => {
   const itemPrices = await inventoryPage.getPriceOfAllItemsOnPage();
   await headerPage.selectSortOption('lohi');
   const itemPricesSorted = await inventoryPage.getPriceOfAllItemsOnPage();
@@ -145,11 +122,7 @@ test('Items are sorted by Price low to high', async ({ page }) => {
   expect(itemPrices).toEqual(itemPricesSorted);
 });
 
-test('Items are sorted by Price high to low', async ({ page }) => {
-  const inventoryPage = new InventoryPage(page);
-  const headerPage = new HeaderPage(page);
-
-  await inventoryPage.goto();
+test('Items are sorted by Price high to low', async ({ inventoryPage, headerPage }) => {
   const itemPrices = await inventoryPage.getPriceOfAllItemsOnPage();
   await headerPage.selectSortOption('hilo');
   const itemPricesSorted = await inventoryPage.getPriceOfAllItemsOnPage();
@@ -159,22 +132,18 @@ test('Items are sorted by Price high to low', async ({ page }) => {
 });
 
 test.describe('Item page tests', () => {
-  test('Item page can be accessed for an Item', async ({ page }) => {
+  test('Item page can be accessed for an Item', async ({ inventoryPage, page }) => {
     const testItemName = 'Sauce Labs Backpack';
-    const inventoryPage = new InventoryPage(page);
     const expectedUrlPattern = new RegExp(`${pageURLs.itemPage}\\?id=\\d+$`);
 
-    await inventoryPage.goto();
     await inventoryPage.clickItemNameLink(testItemName);
 
     await expect(page).toHaveURL(expectedUrlPattern);
   });
 
-  test('Item details match when accessing the Item page', async ({ page }) => {
+  test('Item details match when accessing the Item page', async ({ inventoryPage }) => {
     const testItemName = 'Sauce Labs Backpack';
-    const inventoryPage = new InventoryPage(page);
 
-    await inventoryPage.goto();
     const testItemCard = await inventoryPage.getOneItemByName(testItemName);
     await inventoryPage.clickItemNameLink(testItemName);
     const testClickedItemCard = await inventoryPage.getOneItemByName(testItemName);
@@ -182,6 +151,7 @@ test.describe('Item page tests', () => {
     expect(testItemCard).toEqual(testClickedItemCard);
   });
 
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   test('Item can be added to cart from the Item page', async ({ page }) => {
     const testItemName = 'Sauce Labs Backpack';
     const inventoryPage = new InventoryPage(page);
@@ -191,7 +161,8 @@ test.describe('Item page tests', () => {
 
     await inventoryPage.goto();
     await inventoryPage.clickItemNameLink(testItemName);
-    await itemPage.clickAddtoCartButton();
+    // await itemPage.clickAddtoCartButton();
+    await inventoryPage.addItemToCart(testItemName);
     const shoppingCartCount = await headerPage.getShoppingCartCount();
 
     await expect(itemPage.itemRemoveButton).toBeEnabled();
