@@ -1,19 +1,16 @@
-import { test, expect } from '@playwright/test';
-import { InventoryPage } from './pages/InventoryPage';
-import { CartPage } from './pages/CartPage';
-import { CheckoutOnePage } from './pages/CheckoutOnePage';
-import { HeaderPage } from './pages/HeaderPage';
-import { CheckoutTwoPage } from './pages/CheckoutTwoPage';
+import { expect } from '@playwright/test';
 import { calculateTax, calculateTotal } from './utils/price.utils';
 import pageURLs from './utils/pageURLs';
+import { test } from './fixtures/fixtures';
 
-test('Added Items details match when accessing Checkout page', async ({ page }) => {
+test('Added Items details match when accessing Checkout page', async ({
+  inventoryPage,
+  headerPage,
+  cartPage,
+  checkoutOnePage,
+}) => {
   const testItemNames = ['Sauce Labs Backpack', 'Sauce Labs Bike Light', 'Sauce Labs Bolt T-Shirt'];
   const inventoryItems = [];
-  const inventoryPage = new InventoryPage(page);
-  const headerPage = new HeaderPage(page);
-  const cartPage = new CartPage(page);
-  const checkoutOnePage = new CheckoutOnePage(page);
 
   await inventoryPage.goto();
   for (const testItemName of testItemNames) {
@@ -29,14 +26,15 @@ test('Added Items details match when accessing Checkout page', async ({ page }) 
   expect(inventoryItems).toEqual(checkoutItems);
 });
 
-test('Cart Items Total is calculated correctly', async ({ page }) => {
+test('Cart Items Total is calculated correctly', async ({
+  inventoryPage,
+  headerPage,
+  cartPage,
+  checkoutOnePage,
+  checkoutTwoPage,
+}) => {
   const testItemNames = ['Sauce Labs Backpack', 'Sauce Labs Bike Light', 'Sauce Labs Bolt T-Shirt'];
   const inventoryItems = [];
-  const inventoryPage = new InventoryPage(page);
-  const headerPage = new HeaderPage(page);
-  const cartPage = new CartPage(page);
-  const checkoutOnePage = new CheckoutOnePage(page);
-  const checkoutTwoPage = new CheckoutTwoPage(page);
 
   await inventoryPage.goto();
   for (const testItemName of testItemNames) {
@@ -61,13 +59,15 @@ test('Cart Items Total is calculated correctly', async ({ page }) => {
   expect(itemTotalPriceDisplay).toBe(itemTotalPrice);
 });
 
-test('Order can be cancelled', async ({ page }) => {
+test('Order can be cancelled', async ({
+  inventoryPage,
+  headerPage,
+  cartPage,
+  checkoutOnePage,
+  checkoutTwoPage,
+  page,
+}) => {
   const testItemNames = 'Sauce Labs Backpack';
-  const inventoryPage = new InventoryPage(page);
-  const headerPage = new HeaderPage(page);
-  const cartPage = new CartPage(page);
-  const checkoutOnePage = new CheckoutOnePage(page);
-  const checkoutTwoPage = new CheckoutTwoPage(page);
 
   await inventoryPage.goto();
   await inventoryPage.addItemToCart(testItemNames);
@@ -80,13 +80,15 @@ test('Order can be cancelled', async ({ page }) => {
   await expect(page).toHaveURL(pageURLs.itemsPage);
 });
 
-test('Order can be completed', async ({ page }) => {
+test('Order can be completed', async ({
+  inventoryPage,
+  headerPage,
+  cartPage,
+  checkoutOnePage,
+  checkoutTwoPage,
+  page,
+}) => {
   const testItemNames = 'Sauce Labs Backpack';
-  const inventoryPage = new InventoryPage(page);
-  const headerPage = new HeaderPage(page);
-  const cartPage = new CartPage(page);
-  const checkoutOnePage = new CheckoutOnePage(page);
-  const checkoutTwoPage = new CheckoutTwoPage(page);
 
   await inventoryPage.goto();
   await inventoryPage.addItemToCart(testItemNames);
