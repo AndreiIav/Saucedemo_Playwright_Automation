@@ -1,7 +1,4 @@
 import { expect } from '@playwright/test';
-import { InventoryPage } from './pages/InventoryPage';
-import { HeaderPage } from './pages/HeaderPage';
-import { ItemPage } from './pages/ItemPage';
 import pageURLs from './utils/pageURLs';
 import { test } from './fixtures/fixtures';
 
@@ -151,32 +148,30 @@ test.describe('Item page tests', () => {
     expect(testItemCard).toEqual(testClickedItemCard);
   });
 
-  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  test('Item can be added to cart from the Item page', async ({ page }) => {
+  test('Item can be added to cart from the Item page', async ({
+    inventoryPage,
+    headerPage,
+    itemPage,
+  }) => {
     const testItemName = 'Sauce Labs Backpack';
-    const inventoryPage = new InventoryPage(page);
-    const headerPage = new HeaderPage(page);
-    const itemPage = new ItemPage(page);
     const expectedShoppingCartCount = 1;
 
-    await inventoryPage.goto();
     await inventoryPage.clickItemNameLink(testItemName);
-    // await itemPage.clickAddtoCartButton();
-    await inventoryPage.addItemToCart(testItemName);
+    await itemPage.clickAddtoCartButton();
     const shoppingCartCount = await headerPage.getShoppingCartCount();
 
     await expect(itemPage.itemRemoveButton).toBeEnabled();
     expect(shoppingCartCount).toBe(expectedShoppingCartCount);
   });
 
-  test('Item can be removed from cart from the Item page', async ({ page }) => {
+  test('Item can be removed from cart from the Item page', async ({
+    inventoryPage,
+    headerPage,
+    itemPage,
+  }) => {
     const testItemName = 'Sauce Labs Backpack';
-    const inventoryPage = new InventoryPage(page);
-    const headerPage = new HeaderPage(page);
-    const itemPage = new ItemPage(page);
     const expectedShoppingCartCount = 1;
 
-    await inventoryPage.goto();
     await inventoryPage.clickItemNameLink(testItemName);
     await itemPage.clickAddtoCartButton();
     await expect(itemPage.itemRemoveButton).toBeEnabled();
@@ -188,12 +183,9 @@ test.describe('Item page tests', () => {
     await expect(headerPage.shoppingCartBadge).toBeHidden();
   });
 
-  test('Can navigate to Items page from Item page', async ({ page }) => {
+  test('Can navigate to Items page from Item page', async ({ inventoryPage, headerPage, page }) => {
     const testItemName = 'Sauce Labs Onesie';
-    const inventoryPage = new InventoryPage(page);
-    const headerPage = new HeaderPage(page);
 
-    await inventoryPage.goto();
     await inventoryPage.clickItemNameLink(testItemName);
     await headerPage.clickBackToProductsButton();
 

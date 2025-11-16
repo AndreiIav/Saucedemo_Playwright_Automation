@@ -29,8 +29,8 @@ export const test = base.extend<MyFixtures>({
     await use(headerPage);
   },
 
-  itemPage: async ({page}, use) => {
+  itemPage: async ({ page }, use) => {
     const itemPage = new ItemPage(page);
     await use(itemPage);
-  }
+  },
 });
