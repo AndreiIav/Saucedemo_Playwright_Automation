@@ -1,6 +1,5 @@
 import { expect } from '@playwright/test';
 import { test } from './fixtures/fixtures';
-import { LoginPage } from './pages/LoginPage';
 import logInErrorMessages from './test-data/logInErrorMessages';
 import users from './test-data/users';
 import pageURLs from './utils/pageURLs';
@@ -63,8 +62,10 @@ test.describe('Cannot access app pages without being logged in', () => {
       expectedError: logInErrorMessages.accessCartPageWithoutLoging,
     },
   ].forEach(({ pageName, expectedError }) => {
-    test(`User cannot access '${pageName}' without being logged in`, async ({ page }) => {
-      const loginPage = new LoginPage(page);
+    test(`User cannot access '${pageName}' without being logged in`, async ({
+      loginPage,
+      page,
+    }) => {
       await page.goto(pageName);
 
       const errorMessage = await loginPage.getLoginErrorMessage();
