@@ -15,6 +15,8 @@ type MyFixtures = {
   cartPage: CartPage;
   checkoutOnePage: CheckoutOnePage;
   checkoutTwoPage: CheckoutTwoPage;
+  username: string;
+  password: string;
 };
 
 export const test = base.extend<MyFixtures>({
@@ -51,5 +53,13 @@ export const test = base.extend<MyFixtures>({
   checkoutTwoPage: async ({ page }, use) => {
     const checkoutTwoPage = new CheckoutTwoPage(page);
     await use(checkoutTwoPage);
+  },
+
+  username: async ({}, use) => {
+    await use(process.env.USERNAME ?? 'standard_user');
+  },
+
+  password: async ({}, use) => {
+    await use(process.env.PASSWORD ?? 'secret_sauce');
   },
 });

@@ -1,19 +1,19 @@
-import { test as setup, expect } from '@playwright/test';
+import { expect } from '@playwright/test';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import { LoginPage } from '../pages/LoginPage';
-import users from '../test-data/users';
 import pageURLs from '../utils/pageURLs';
+import { test as setup } from '../fixtures/fixtures';
 
 const rootDirectory = fileURLToPath(import.meta.url);
 const rootDirectoryPath = path.dirname(rootDirectory);
 const authFile = path.join(rootDirectoryPath, '../../playwright/.auth/user.json');
 
-setup('authenticate', async ({ page }) => {
+setup('authenticate', async ({ page, username, password }) => {
   // Perform authentication steps.
   const loginPage = new LoginPage(page);
   await page.goto('/');
-  await loginPage.login(users.standardUser.username, users.standardUser.password);
+  await loginPage.login(username, password);
   // Wait until the page receives the cookies.
   //
   // Sometimes login flow sets cookies in the process of several redirects.
