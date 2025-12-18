@@ -1,6 +1,4 @@
-FROM node:25-slim
-
-RUN apt-get update && apt-get install -y 
+FROM node:24-slim
 
 # Set working directory
 WORKDIR /app 
@@ -14,7 +12,7 @@ RUN npm ci
 # Install Chromium browser
 RUN npx playwright install chromium --with-deps 
 
-# Copy the rest of the application
+# Copy code
 COPY . .
 
 # Run tests
