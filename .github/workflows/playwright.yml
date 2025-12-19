@@ -11,6 +11,9 @@ permissions:
 jobs:
   test-and-publish:
     runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
     
     steps:
       - uses: actions/checkout@v4
