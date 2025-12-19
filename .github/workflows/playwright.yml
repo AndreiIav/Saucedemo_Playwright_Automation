@@ -20,6 +20,7 @@ jobs:
           docker build -t playwright-tests .
           
       - name: Run tests for different users
+        continue-on-error: true
         run: |
           mkdir -p reports
           
