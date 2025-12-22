@@ -27,13 +27,16 @@ jobs:
         run: |
           mkdir -p reports
           
-          for USER in standard_user problem_user error_user 
+          for USER in standard_user problem_user
           do 
             docker run --rm \
               -e USERNAME=$USER \
               -v $PWD/reports:/app/playwright-report \
               playwright-tests 
           done           
+
+      - name: Show generated files
+        run: ls $PWD/reports
 
       - name: Prepare Github Pages content 
         run: |
