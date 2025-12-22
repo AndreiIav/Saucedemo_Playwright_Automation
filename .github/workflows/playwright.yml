@@ -31,7 +31,7 @@ jobs:
           do 
             docker run --rm \
               -e USERNAME=$USER \
-              -v $PWD/reports:/app/playwright-report \
+              -v $PWD/reports/$USERNAME:/app/playwright-report \
               playwright-tests 
           done           
 
