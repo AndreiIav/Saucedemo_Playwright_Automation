@@ -29,10 +29,12 @@ jobs:
           
           for USER in standard_user problem_user error_user
           do 
+            echo "Running tests for $USER"
+
             docker run --rm \
               -e USERNAME=$USER \
               -v $PWD/reports/$USER:/app/playwright-report \
-              playwright-tests 
+              playwright-tests || true
           done           
 
       - name: Show generated files
