@@ -27,7 +27,7 @@ jobs:
         run: |
           mkdir -p reports
           
-          for USER in standard_user
+          for USER in standard_user problem_user error_user
           do 
             docker run --rm \
               -e USERNAME=$USER \
