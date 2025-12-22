@@ -31,13 +31,12 @@ jobs:
           do 
             docker run --rm \
               -e USERNAME=$USER \
-              -v $PWD/reports/$USERNAME:/app/playwright-report \
+              -v $PWD/reports/$USER:/app/playwright-report \
               playwright-tests 
           done           
 
       - name: Show generated files
-        run: ls $PWD/reports \
-             ls $PWD/reports/standard_user
+        run: ls $PWD/reports
 
       - name: Prepare Github Pages content 
         run: |
