@@ -37,28 +37,11 @@ jobs:
               playwright-tests || true
           done           
 
-      - name: Show generated files
-        run: ls $PWD/reports
-
       - name: Prepare Github Pages content 
         run: |
           mkdir -p public
           cp -r reports/* public/
-
-
-          # Index page
-          cat <<EOF > public/index.html
-          <html>
-            <body>
-              <h1> Playwright Reports</h1>
-              <ul>
-                <li><a href = "./standard_user/"> standard_user Report</a></li>
-                <li><a href = "./problem_user/"> problem_user Report</a></li>
-                <li><a href = "./error_user/"> error_user Report</a></li>
-              </ul>
-            </body>
-          </html>
-          EOF     
+          cp reports_index_page/index.html public/   
 
       - name: Upload Pages artifact          
         uses: actions/upload-pages-artifact@v3    
