@@ -45,7 +45,7 @@ Any valid saucedemo username can be supplied.
 # Run Tests in Docker
 `docker run --rm playwright-tests`\
 Run tests for a specific user by passing an environment variable:\
-`docker run --rm -e USERNAME=problem_user playwright-saucedemo`
+`docker run --rm -e USERNAME=problem_user playwright-tests`
 
 # Continous Integration (Github Actions)
 This project includes a **Github Actions CI pipeline** that:
