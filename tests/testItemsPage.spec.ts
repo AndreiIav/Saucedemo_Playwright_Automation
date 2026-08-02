@@ -27,7 +27,12 @@ test('Item can be removed from cart', async ({ inventoryPage, headerPage }) => {
   await inventoryPage.goto();
   // add item to cart
   const item = await inventoryPage.addItemToCart(testItemName);
+
   const itemAddButton = inventoryPage.getItemButton(item, 'addToCart');
+  const itemRemoveButton = inventoryPage.getItemButton(item, 'Remove');
+
+  // check that the Remove button is enabled
+  await expect(itemRemoveButton).toBeEnabled();
   // remove item from cart
   await inventoryPage.removeItemFromCart(testItemName);
 
@@ -159,15 +164,25 @@ test.describe('Item page tests', () => {
     await expect(page).toHaveURL(expectedUrlPattern);
   });
 
-  test('Item details match when accessing the Item page', async ({ inventoryPage }) => {
+  test('Item details match when accessing the Item page',
+     async ({ inventoryPage, page }) => {
     const testItemName = 'Sauce Labs Backpack';
+    const urlItemPage = new RegExp(`${pageURLs.itemPage}\\?id=\\d+$`);
 
     await inventoryPage.goto();
     const testItemCard = await inventoryPage.getOneItemByName(testItemName);
+    // access the item page and confirm that the page was accessed
     await inventoryPage.clickItemNameLink(testItemName);
-    const testClickedItemCard = await inventoryPage.getOneItemByName(testItemName);
+    await expect(page).toHaveURL(urlItemPage);
 
-    expect(testItemCard).toEqual(testClickedItemCard);
+    // get name of the item in item page and construct an Item object
+    const items = await inventoryPage.getNameOfAllItemsOnPage();
+    const itemDetailsPageCard = await inventoryPage.getOneItemByName(items[0]);
+
+    expect(testItemCard.itemName).toEqual(itemDetailsPageCard.itemName);
+    expect(testItemCard.itemDescription).toEqual(itemDetailsPageCard.itemDescription);
+    expect(testItemCard.itemPrice).toEqual(itemDetailsPageCard.itemPrice);
+    expect(testItemCard.itemImage).toEqual(itemDetailsPageCard.itemImage);
   });
 
   test('Item can be added to cart from the Item page', async ({
@@ -181,9 +196,10 @@ test.describe('Item page tests', () => {
     await inventoryPage.goto();
     await inventoryPage.clickItemNameLink(testItemName);
     await itemPage.clickAddtoCartButton();
-    const shoppingCartCount = await headerPage.getShoppingCartCount();
 
     await expect(itemPage.itemRemoveButton).toBeEnabled();
+    expect(headerPage.shoppingCartBadge).toBeEnabled();
+    const shoppingCartCount = await headerPage.getShoppingCartCount();
     expect(shoppingCartCount).toBe(expectedShoppingCartCount);
   });
 
@@ -199,7 +215,9 @@ test.describe('Item page tests', () => {
     await inventoryPage.clickItemNameLink(testItemName);
     await itemPage.clickAddtoCartButton();
     await expect(itemPage.itemRemoveButton).toBeEnabled();
+    await expect(headerPage.shoppingCartBadge).toBeEnabled();
     const shoppingCartCount = await headerPage.getShoppingCartCount();
+    
     expect(shoppingCartCount).toBe(expectedShoppingCartCount);
     await itemPage.clickRemoveFromCartButton();
 

@@ -1,4 +1,4 @@
-export default {
+export const logInErrorMessages = {
   wrongUserOrPassErrorMessage: 'Username and password do not match any user in this service',
   missingUsernameErrorMessage: 'Username is required',
   missingPassErrorMessage: 'Password is required',

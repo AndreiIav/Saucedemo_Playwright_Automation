@@ -53,7 +53,7 @@ test('Checkout Step Two Page name is "Checkout: Overview"', async ({
   await inventoryPage.goto();
   await headerPage.clickCartButton();
   await cartPage.clickCheckoutButton();
-  await checkoutOnePage.enterCheckoutInfo();
+  await checkoutOnePage.enterValuesForCheckoutField();
   await checkoutOnePage.clickContinueButton();
   const pageTitle = await headerPage.getPageTitle();
 
@@ -72,7 +72,7 @@ test('Checkout Complete Page name is "Checkout: Complete!"', async ({
   await inventoryPage.goto();
   await headerPage.clickCartButton();
   await cartPage.clickCheckoutButton();
-  await checkoutOnePage.enterCheckoutInfo();
+  await checkoutOnePage.enterValuesForCheckoutField();
   await checkoutOnePage.clickContinueButton();
   await checkoutTwoPage.clickFinishButton();
   const pageTitle = await headerPage.getPageTitle();

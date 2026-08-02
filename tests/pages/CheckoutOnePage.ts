@@ -27,7 +27,7 @@ export class CheckoutOnePage {
     await this.continueButton.click();
   }
 
-  async enterCheckoutInfo(
+  async enterValuesForCheckoutField(
     firstName = 'first name',
     lastName = 'last name',
     zipPostalCode = 'postal code',

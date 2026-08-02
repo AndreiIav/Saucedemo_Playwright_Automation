@@ -8,6 +8,7 @@ test('Added Items details match when accessing Checkout page', async ({
   headerPage,
   cartPage,
   checkoutOnePage,
+  page
 }) => {
   const testItemNames = ['Sauce Labs Backpack', 'Sauce Labs Bike Light', 'Sauce Labs Bolt T-Shirt'];
   const inventoryItems = [];
@@ -18,9 +19,12 @@ test('Added Items details match when accessing Checkout page', async ({
     inventoryItems.push(item);
   }
   await headerPage.clickCartButton();
+  await expect(page).toHaveURL(pageURLs.cartPage);
   await cartPage.clickCheckoutButton();
-  await checkoutOnePage.enterCheckoutInfo();
+  await checkoutOnePage.enterValuesForCheckoutField();
+  await expect(page).toHaveURL(pageURLs.checkoutStepOne);
   await checkoutOnePage.clickContinueButton();
+  await expect(page).toHaveURL(pageURLs.checkoutStepTwo);
   const checkoutItems = await inventoryPage.getAllItemsOnPage();
 
   expect(inventoryItems).toEqual(checkoutItems);
@@ -32,6 +36,7 @@ test('Cart Items Total is calculated correctly', async ({
   cartPage,
   checkoutOnePage,
   checkoutTwoPage,
+  page
 }) => {
   const testItemNames = ['Sauce Labs Backpack', 'Sauce Labs Bike Light', 'Sauce Labs Bolt T-Shirt'];
   const inventoryItems = [];
@@ -42,9 +47,12 @@ test('Cart Items Total is calculated correctly', async ({
     inventoryItems.push(item);
   }
   await headerPage.clickCartButton();
+  await expect(page).toHaveURL(pageURLs.cartPage);
   await cartPage.clickCheckoutButton();
-  await checkoutOnePage.enterCheckoutInfo();
+  await checkoutOnePage.enterValuesForCheckoutField();
+  await expect(page).toHaveURL(pageURLs.checkoutStepOne);
   await checkoutOnePage.clickContinueButton();
+  await expect(page).toHaveURL(pageURLs.checkoutStepTwo);
   const checkoutItems = await inventoryPage.getPriceOfAllItemsOnPage();
 
   const itemTotal = calculateTotal(...checkoutItems);
@@ -73,7 +81,7 @@ test('Order can be cancelled', async ({
   await inventoryPage.addItemToCart(testItemNames);
   await headerPage.clickCartButton();
   await cartPage.clickCheckoutButton();
-  await checkoutOnePage.enterCheckoutInfo();
+  await checkoutOnePage.enterValuesForCheckoutField();
   await checkoutOnePage.clickContinueButton();
   await checkoutTwoPage.clickCancelButton();
 
@@ -93,9 +101,12 @@ test('Order can be completed', async ({
   await inventoryPage.goto();
   await inventoryPage.addItemToCart(testItemNames);
   await headerPage.clickCartButton();
+  await expect(page).toHaveURL(pageURLs.cartPage);
   await cartPage.clickCheckoutButton();
-  await checkoutOnePage.enterCheckoutInfo();
+  await expect(page).toHaveURL(pageURLs.checkoutStepOne);
+  await checkoutOnePage.enterValuesForCheckoutField();
   await checkoutOnePage.clickContinueButton();
+  await expect(page).toHaveURL(pageURLs.checkoutStepTwo);
   await checkoutTwoPage.clickFinishButton();
 
   await expect(page).toHaveURL(pageURLs.checkoutComplete);

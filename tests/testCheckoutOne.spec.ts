@@ -1,6 +1,7 @@
 import { expect } from '@playwright/test';
 import pageURLs from './utils/pageURLs';
 import { test } from './fixtures/fixtures';
+import { checkoutOneFormErrorMessages } from './test-data/checkoutOneFormErrorMessages';
 
 test('Can navigate to Checkout step two page', async ({
   inventoryPage,
@@ -12,7 +13,8 @@ test('Can navigate to Checkout step two page', async ({
   await inventoryPage.goto();
   await headerPage.clickCartButton();
   await cartPage.clickCheckoutButton();
-  await checkoutOnePage.enterCheckoutInfo();
+
+  await checkoutOnePage.enterValuesForCheckoutField();
   await checkoutOnePage.clickContinueButton();
 
   await expect(page).toHaveURL(pageURLs.checkoutStepTwo);
@@ -28,51 +30,67 @@ test('Can navigate to Cart page by cancelling checkout', async ({
   await inventoryPage.goto();
   await headerPage.clickCartButton();
   await cartPage.clickCheckoutButton();
+
   await checkoutOnePage.clickCancelButton();
 
   await expect(page).toHaveURL(pageURLs.cartPage);
 });
 
-test.describe('Test form errors', () => {
+test.describe('Test Checkout step one form errors', () => {
   [
     {
       fieldTest: 'First Name',
       firstName: '',
       lastName: 'lastName',
       zipPostalCode: 'zipPostalCode',
-      expectedErrorMessage: 'Error: First Name is required',
+      expectedErrorMessage: checkoutOneFormErrorMessages.missingFirstName,
     },
     {
       fieldTest: 'Last Name',
       firstName: 'firstName',
       lastName: '',
       zipPostalCode: 'zipPostalCode',
-      expectedErrorMessage: 'Error: Last Name is required',
+      expectedErrorMessage: checkoutOneFormErrorMessages.missingLastName,
     },
     {
       fieldTest: 'Zip/Postal Code',
       firstName: 'firstName',
       lastName: 'lastName',
       zipPostalCode: '',
-      expectedErrorMessage: 'Error: Postal Code is required',
+      expectedErrorMessage: checkoutOneFormErrorMessages.missingZipPostalCode,
     },
   ].forEach(({ fieldTest, firstName, lastName, zipPostalCode, expectedErrorMessage }) => {
-    test(`Cannot continue to Checkout step two page if '${fieldTest}' field is not filled`, async ({
+    test(`Correct error message is displayed when '${fieldTest}' field is not populated`, async ({
       inventoryPage,
       headerPage,
       cartPage,
-      checkoutOnePage,
-      page,
+      checkoutOnePage
     }) => {
       await inventoryPage.goto();
       await headerPage.clickCartButton();
       await cartPage.clickCheckoutButton();
-      await checkoutOnePage.enterCheckoutInfo(firstName, lastName, zipPostalCode);
+
+      await checkoutOnePage.enterValuesForCheckoutField(firstName, lastName, zipPostalCode);
       await checkoutOnePage.clickContinueButton();
       const errorText = await checkoutOnePage.getErrorText();
 
       expect(errorText).toBe(expectedErrorMessage);
-      await expect(page).toHaveURL(pageURLs.checkoutStepOne);
     });
   });
+});
+
+test('Can navigate to Checkout step two page fron Checkout step one', async ({
+      inventoryPage,
+      headerPage,
+      cartPage,
+      checkoutOnePage,
+       page}) => {
+        await inventoryPage.goto();
+        await headerPage.clickCartButton();
+        await cartPage.clickCheckoutButton();
+        await checkoutOnePage.enterValuesForCheckoutField();
+
+        await checkoutOnePage.clickContinueButton();
+
+        await expect(page).toHaveURL(pageURLs.checkoutStepTwo);
 });

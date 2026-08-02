@@ -1,8 +1,8 @@
 import { expect } from '@playwright/test';
 import { test } from './fixtures/fixtures';
-import logInErrorMessages from './test-data/logInErrorMessages';
-import users from './test-data/users';
-import pageURLs from './utils/pageURLs';
+import { logInErrorMessages } from './test-data/logInErrorMessages';
+import { users }  from './test-data/users';
+import pageURLs  from './utils/pageURLs';
 
 // Reset storage state for this file to avoid being authenticated
 test.use({ storageState: { cookies: [], origins: [] } });

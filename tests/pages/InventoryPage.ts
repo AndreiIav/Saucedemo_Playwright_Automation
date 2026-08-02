@@ -30,10 +30,14 @@ export class InventoryPage {
     return await this.createItemCards(items);
   }
 
-  async getOneItemByName(itemName: string) {
+  async getOneItemByName(itemName: string): Promise<Item> {
     const items = this.getInventoryItems(itemName);
     const item = await this.createItemCards(items);
-    return item[0];
+    if (item[0]) {
+      return item[0];
+    }
+    throw new Error(`No Item with '${itemName}' name found on the page.
+       Item cannot be fetched`) 
   }
 
   getInventoryItems(itemName = '') {
