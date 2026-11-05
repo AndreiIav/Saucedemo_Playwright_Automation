@@ -8,24 +8,38 @@ test('Added Items details match when accessing Checkout page', async ({
   headerPage,
   cartPage,
   checkoutOnePage,
+  checkoutTwoPage,
   page
 }) => {
-  const testItemNames = ['Sauce Labs Backpack', 'Sauce Labs Bike Light', 'Sauce Labs Bolt T-Shirt'];
+  const testItemNames = [
+    'Sauce Labs Backpack',
+    'Sauce Labs Bike Light',
+    'Sauce Labs Bolt T-Shirt'];
   const inventoryItems = [];
+  const checkoutItems = [];
 
   await inventoryPage.goto();
   for (const testItemName of testItemNames) {
-    const item = await inventoryPage.addItemToCart(testItemName);
-    inventoryItems.push(item);
+    const inventoryItem = inventoryPage.getItem(testItemName);
+    await inventoryItem.addToCart();
+    const inventoryItemDetails = await inventoryItem.getItemDetails();
+    inventoryItems.push(inventoryItemDetails);
   }
+
   await headerPage.clickCartButton();
-  await expect(page).toHaveURL(pageURLs.cartPage);
+  await page.waitForURL(pageURLs.cartPage);
   await cartPage.clickCheckoutButton();
+
+  await page.waitForURL(pageURLs.checkoutStepOne);
   await checkoutOnePage.enterValuesForCheckoutField();
-  await expect(page).toHaveURL(pageURLs.checkoutStepOne);
   await checkoutOnePage.clickContinueButton();
-  await expect(page).toHaveURL(pageURLs.checkoutStepTwo);
-  const checkoutItems = await inventoryPage.getAllItemsOnPage();
+
+  await page.waitForURL(pageURLs.checkoutStepTwo);
+  for (const testItemName of testItemNames) {
+    const checkoutItem = checkoutTwoPage.getItem(testItemName);
+    const checkoutItemDetails = await checkoutItem.getItemDetails();
+    checkoutItems.push(checkoutItemDetails);
+  }
 
   expect(inventoryItems).toEqual(checkoutItems);
 });
@@ -38,22 +52,30 @@ test('Cart Items Total is calculated correctly', async ({
   checkoutTwoPage,
   page
 }) => {
-  const testItemNames = ['Sauce Labs Backpack', 'Sauce Labs Bike Light', 'Sauce Labs Bolt T-Shirt'];
+  const testItemNames = [
+    'Sauce Labs Backpack',
+    'Sauce Labs Bike Light',
+    'Sauce Labs Bolt T-Shirt'];
   const inventoryItems = [];
 
   await inventoryPage.goto();
   for (const testItemName of testItemNames) {
-    const item = await inventoryPage.addItemToCart(testItemName);
-    inventoryItems.push(item);
+    const inventoryItem = inventoryPage.getItem(testItemName);
+    await inventoryItem.addToCart();
+    const inventoryItemDetails = await inventoryItem.getItemDetails();
+    inventoryItems.push(inventoryItemDetails);
   }
   await headerPage.clickCartButton();
-  await expect(page).toHaveURL(pageURLs.cartPage);
+
+  await page.waitForURL(pageURLs.cartPage);
   await cartPage.clickCheckoutButton();
+
+  await page.waitForURL(pageURLs.checkoutStepOne);
   await checkoutOnePage.enterValuesForCheckoutField();
-  await expect(page).toHaveURL(pageURLs.checkoutStepOne);
   await checkoutOnePage.clickContinueButton();
+
   await expect(page).toHaveURL(pageURLs.checkoutStepTwo);
-  const checkoutItems = await inventoryPage.getPriceOfAllItemsOnPage();
+  const checkoutItems = await checkoutTwoPage.getPriceOfAllItemsOnPage();
 
   const itemTotal = calculateTotal(...checkoutItems);
   const itemTax = calculateTax(itemTotal);
@@ -75,14 +97,21 @@ test('Order can be cancelled', async ({
   checkoutTwoPage,
   page,
 }) => {
-  const testItemNames = 'Sauce Labs Backpack';
+  const testItemName = 'Sauce Labs Backpack';
 
   await inventoryPage.goto();
-  await inventoryPage.addItemToCart(testItemNames);
+  const item = inventoryPage.getItem(testItemName);
+  await item.addToCart();
   await headerPage.clickCartButton();
+
+  await page.waitForURL(pageURLs.cartPage);
   await cartPage.clickCheckoutButton();
+
+  await page.waitForURL(pageURLs.checkoutStepOne);
   await checkoutOnePage.enterValuesForCheckoutField();
   await checkoutOnePage.clickContinueButton();
+
+  await page.waitForURL(pageURLs.checkoutStepTwo);
   await checkoutTwoPage.clickCancelButton();
 
   await expect(page).toHaveURL(pageURLs.itemsPage);
@@ -96,17 +125,21 @@ test('Order can be completed', async ({
   checkoutTwoPage,
   page,
 }) => {
-  const testItemNames = 'Sauce Labs Backpack';
+  const testItemName = 'Sauce Labs Backpack';
 
   await inventoryPage.goto();
-  await inventoryPage.addItemToCart(testItemNames);
+  const item = inventoryPage.getItem(testItemName);
+  await item.addToCart();
   await headerPage.clickCartButton();
-  await expect(page).toHaveURL(pageURLs.cartPage);
+
+  await page.waitForURL(pageURLs.cartPage);
   await cartPage.clickCheckoutButton();
-  await expect(page).toHaveURL(pageURLs.checkoutStepOne);
+
+  await page.waitForURL(pageURLs.checkoutStepOne);
   await checkoutOnePage.enterValuesForCheckoutField();
   await checkoutOnePage.clickContinueButton();
-  await expect(page).toHaveURL(pageURLs.checkoutStepTwo);
+
+  await page.waitForURL(pageURLs.checkoutStepTwo);
   await checkoutTwoPage.clickFinishButton();
 
   await expect(page).toHaveURL(pageURLs.checkoutComplete);

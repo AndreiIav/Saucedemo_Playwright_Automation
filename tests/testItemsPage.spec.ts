@@ -12,12 +12,12 @@ test('Items can be added to cart', async ({ inventoryPage, headerPage }) => {
 
   await inventoryPage.goto();
   for (let i = 0; i < testItemNames.length; i++) {
-    const item = await inventoryPage.addItemToCart(testItemNames[i]);
+    const item = inventoryPage.getItem(testItemNames[i]);
+    await item.addToCart();
     const shoppingCartCount = await headerPage.getShoppingCartCount();
-    const itemRemoveButton = inventoryPage.getItemButton(item, 'Remove');
 
     expect(shoppingCartCount).toBe(i + 1);
-    await expect(itemRemoveButton).toBeEnabled();
+    await expect(item.removeButton).toBeEnabled();
   }
 });
 
@@ -26,23 +26,23 @@ test('Item can be removed from cart', async ({ inventoryPage, headerPage }) => {
 
   await inventoryPage.goto();
   // add item to cart
-  const item = await inventoryPage.addItemToCart(testItemName);
-
-  const itemAddButton = inventoryPage.getItemButton(item, 'addToCart');
-  const itemRemoveButton = inventoryPage.getItemButton(item, 'Remove');
+  const item = inventoryPage.getItem(testItemName);
+  await item.addToCart()
 
   // check that the Remove button is enabled
-  await expect(itemRemoveButton).toBeEnabled();
+  await expect(item.removeButton).toBeEnabled();
   // remove item from cart
-  await inventoryPage.removeItemFromCart(testItemName);
+  await item.remove();
 
   // check that the 'Add to cart' button is enabled for the removed item and
   // that the Cart counter is not visible
-  await expect(itemAddButton).toBeEnabled();
+  await expect(item.addtoCartButton).toBeEnabled();
   await expect(headerPage.shoppingCartBadge).toBeHidden();
 });
 
-test('Items can be removed from cart', async ({ inventoryPage, headerPage }) => {
+test('Items can be removed from cart', async ({
+  inventoryPage,
+  headerPage }) => {
   const testItemNames = [
     'Sauce Labs Backpack',
     'Sauce Labs Bike Light',
@@ -53,7 +53,8 @@ test('Items can be removed from cart', async ({ inventoryPage, headerPage }) => 
   await inventoryPage.goto();
   // add items to cart
   for (let i = 0; i < testItemNames.length; i++) {
-    await inventoryPage.addItemToCart(testItemNames[i]);
+    const item = inventoryPage.getItem(testItemNames[i]);
+    await item.addToCart();
   }
 
   let shoppingCartCount = await headerPage.getShoppingCartCount();
@@ -62,21 +63,25 @@ test('Items can be removed from cart', async ({ inventoryPage, headerPage }) => 
   // remove all items from cart except one and check the cart counter decreases
   // and that the 'Add to cart' button is enabled for the removed items
   for (let i = 0; i < testItemNames.length - 1; i++) {
-    const item = await inventoryPage.removeItemFromCart(testItemNames[i]);
-    const itemAddButton = inventoryPage.getItemButton(item, 'addToCart');
+    const item = inventoryPage.getItem(testItemNames[i]);
+    await item.remove();
     const updatedShoppingCartCount = await headerPage.getShoppingCartCount();
     shoppingCartCount = shoppingCartCount - 1;
 
     expect(updatedShoppingCartCount).toBe(shoppingCartCount);
-    await expect(itemAddButton).toBeEnabled();
+    await expect(item.addtoCartButton).toBeEnabled();
   }
 });
 
-test('Can navigate to Cart page', async ({ inventoryPage, headerPage, page }) => {
+test('Can navigate to Cart page', async ({
+  inventoryPage,
+  headerPage,
+  page }) => {
   const testItemName = 'Sauce Labs Fleece Jacket';
 
   await inventoryPage.goto();
-  await inventoryPage.addItemToCart(testItemName);
+  const item = inventoryPage.getItem(testItemName);
+  await item.addToCart();
   await headerPage.clickCartButton();
 
   await expect(page).toHaveURL(pageURLs.cartPage);
@@ -100,12 +105,12 @@ test('Can navigate to Cart page', async ({ inventoryPage, headerPage, page }) =>
     expectedSortText: 'Price (high to low)',
   },
 ].forEach(({ sortOption, expectedSortText }) => {
-  test(`Sort text '${expectedSortText}' updates when the option is selected`, async ({
-    inventoryPage,
-    headerPage,
-  }) => {
+  test(`Sort text '${expectedSortText}' updates when the option is selected`,
+    async ({
+      inventoryPage,
+      headerPage,
+    }) => {
     await inventoryPage.goto();
-
     await headerPage.selectSortOption(sortOption);
     const sortText = await headerPage.getSortActiveOption();
 
@@ -114,9 +119,11 @@ test('Can navigate to Cart page', async ({ inventoryPage, headerPage, page }) =>
 });
 
 test('Items are sorted A to Z', async ({ inventoryPage, headerPage }) => {
+  const sortOption = 'az';
+
   await inventoryPage.goto();
   const itemNames = await inventoryPage.getNameOfAllItemsOnPage();
-  await headerPage.selectSortOption('az');
+  await headerPage.selectSortOption(sortOption);
   const itemNamesSorted = await inventoryPage.getNameOfAllItemsOnPage();
   itemNames.sort();
 
@@ -124,16 +131,20 @@ test('Items are sorted A to Z', async ({ inventoryPage, headerPage }) => {
 });
 
 test('Items are sorted Z to A', async ({ inventoryPage, headerPage }) => {
+  const sortOption = 'za';
+
   await inventoryPage.goto();
   const itemNames = await inventoryPage.getNameOfAllItemsOnPage();
-  await headerPage.selectSortOption('za');
+  await headerPage.selectSortOption(sortOption);
   const itemNamesSorted = await inventoryPage.getNameOfAllItemsOnPage();
   itemNames.sort().reverse();
 
   expect(itemNames).toEqual(itemNamesSorted);
 });
 
-test('Items are sorted by Price low to high', async ({ inventoryPage, headerPage }) => {
+test('Items are sorted by Price low to high', async ({
+  inventoryPage,
+  headerPage }) => {
   await inventoryPage.goto();
   const itemPrices = await inventoryPage.getPriceOfAllItemsOnPage();
   await headerPage.selectSortOption('lohi');
@@ -143,7 +154,9 @@ test('Items are sorted by Price low to high', async ({ inventoryPage, headerPage
   expect(itemPrices).toEqual(itemPricesSorted);
 });
 
-test('Items are sorted by Price high to low', async ({ inventoryPage, headerPage }) => {
+test('Items are sorted by Price high to low', async ({
+  inventoryPage,
+  headerPage }) => {
   await inventoryPage.goto();
   const itemPrices = await inventoryPage.getPriceOfAllItemsOnPage();
   await headerPage.selectSortOption('hilo');
@@ -153,83 +166,99 @@ test('Items are sorted by Price high to low', async ({ inventoryPage, headerPage
   expect(itemPrices).toEqual(itemPricesSorted);
 });
 
-test.describe('Item page tests', () => {
-  test('Item page can be accessed for an Item', async ({ inventoryPage, page }) => {
+test.describe('Item details page tests', () => {
+  test('Item details page can be accessed for an Item', async ({
+    inventoryPage,
+    page }) => {
     const testItemName = 'Sauce Labs Backpack';
     const expectedUrlPattern = new RegExp(`${pageURLs.itemPage}\\?id=\\d+$`);
 
     await inventoryPage.goto();
-    await inventoryPage.clickItemNameLink(testItemName);
+    const item = inventoryPage.getItem(testItemName);
+    await item.openViaName();
 
     await expect(page).toHaveURL(expectedUrlPattern);
   });
 
-  test('Item details match when accessing the Item page',
-     async ({ inventoryPage, page }) => {
+  test('Item details match when accessing the Item details page',
+    async ({ inventoryPage, itemDetailsPage, page }) => {
     const testItemName = 'Sauce Labs Backpack';
     const urlItemPage = new RegExp(`${pageURLs.itemPage}\\?id=\\d+$`);
 
     await inventoryPage.goto();
-    const testItemCard = await inventoryPage.getOneItemByName(testItemName);
-    // access the item page and confirm that the page was accessed
-    await inventoryPage.clickItemNameLink(testItemName);
-    await expect(page).toHaveURL(urlItemPage);
+    const item = inventoryPage.getItem(testItemName);
+    const itemDetails = await item.getItemDetails();
 
-    // get name of the item in item page and construct an Item object
-    const items = await inventoryPage.getNameOfAllItemsOnPage();
-    const itemDetailsPageCard = await inventoryPage.getOneItemByName(items[0]);
+    // access the item details page
+    await item.openViaName();
+    await page.waitForURL(urlItemPage);
+    const itemPageDetails = await itemDetailsPage.getItemDetails();
 
-    expect(testItemCard.itemName).toEqual(itemDetailsPageCard.itemName);
-    expect(testItemCard.itemDescription).toEqual(itemDetailsPageCard.itemDescription);
-    expect(testItemCard.itemPrice).toEqual(itemDetailsPageCard.itemPrice);
-    expect(testItemCard.itemImage).toEqual(itemDetailsPageCard.itemImage);
+    expect(itemDetails).toEqual(itemPageDetails);
   });
 
-  test('Item can be added to cart from the Item page', async ({
+  test('Item can be added to cart from the Item details page', async ({
     inventoryPage,
     headerPage,
-    itemPage,
+    itemDetailsPage,
+    page
   }) => {
     const testItemName = 'Sauce Labs Backpack';
     const expectedShoppingCartCount = 1;
+    const urlItemPage = new RegExp(`${pageURLs.itemPage}\\?id=\\d+$`);
 
     await inventoryPage.goto();
-    await inventoryPage.clickItemNameLink(testItemName);
-    await itemPage.clickAddtoCartButton();
+    const item = inventoryPage.getItem(testItemName);
+    await item.openViaName();
+    await page.waitForURL(urlItemPage);
+    await itemDetailsPage.addToCart();
 
-    await expect(itemPage.itemRemoveButton).toBeEnabled();
-    expect(headerPage.shoppingCartBadge).toBeEnabled();
-    const shoppingCartCount = await headerPage.getShoppingCartCount();
-    expect(shoppingCartCount).toBe(expectedShoppingCartCount);
-  });
-
-  test('Item can be removed from cart from the Item page', async ({
-    inventoryPage,
-    headerPage,
-    itemPage,
-  }) => {
-    const testItemName = 'Sauce Labs Backpack';
-    const expectedShoppingCartCount = 1;
-
-    await inventoryPage.goto();
-    await inventoryPage.clickItemNameLink(testItemName);
-    await itemPage.clickAddtoCartButton();
-    await expect(itemPage.itemRemoveButton).toBeEnabled();
+    await expect(itemDetailsPage.removeButton).toBeEnabled();
     await expect(headerPage.shoppingCartBadge).toBeEnabled();
     const shoppingCartCount = await headerPage.getShoppingCartCount();
-    
     expect(shoppingCartCount).toBe(expectedShoppingCartCount);
-    await itemPage.clickRemoveFromCartButton();
+  });
 
-    await expect(itemPage.itemAddtoCartButton).toBeEnabled();
+  test('Item can be removed from cart from the Item details page', async ({
+    inventoryPage,
+    headerPage,
+    itemDetailsPage,
+    page
+  }) => {
+    const testItemName = 'Sauce Labs Backpack';
+    const expectedShoppingCartCount = 1;
+    const urlItemPage = new RegExp(`${pageURLs.itemPage}\\?id=\\d+$`);
+
+    await inventoryPage.goto();
+    const item = inventoryPage.getItem(testItemName);
+    await item.openViaName();
+    await page.waitForURL(urlItemPage);
+
+    // add item to cart
+    await itemDetailsPage.addToCart();
+    await expect(itemDetailsPage.removeButton).toBeEnabled()
+    await expect(headerPage.shoppingCartBadge).toBeEnabled();
+    const shoppingCartCount = await headerPage.getShoppingCartCount();
+    expect(shoppingCartCount).toBe(expectedShoppingCartCount);
+
+    // remove item from cart
+    await itemDetailsPage.remove();
+
+    await expect(itemDetailsPage.addtoCartButton).toBeEnabled();
     await expect(headerPage.shoppingCartBadge).toBeHidden();
   });
 
-  test('Can navigate to Items page from Item page', async ({ inventoryPage, headerPage, page }) => {
-    const testItemName = 'Sauce Labs Onesie';
+  test('Can navigate to Items page from Item details page', async ({ 
+    inventoryPage,
+    headerPage,
+    page }) => {
+    const testItemName = 'Sauce Labs Backpack';
+    const urlItemPage = new RegExp(`${pageURLs.itemPage}\\?id=\\d+$`);
 
     await inventoryPage.goto();
-    await inventoryPage.clickItemNameLink(testItemName);
+    const item = inventoryPage.getItem(testItemName);
+    await item.openViaName()
+    await page.waitForURL(urlItemPage);
     await headerPage.clickBackToProductsButton();
 
     await expect(page).toHaveURL(pageURLs.itemsPage);

@@ -2,7 +2,7 @@ import { test as base } from '@playwright/test';
 import { LoginPage } from '../pages/LoginPage';
 import { InventoryPage } from '../pages/InventoryPage';
 import { HeaderPage } from '../pages/HeaderPage';
-import { ItemPage } from '../pages/ItemPage';
+import { ItemDetailsPage } from '../pages/ItemDetailsPage';
 import { CartPage } from '../pages/CartPage';
 import { CheckoutOnePage } from '../pages/CheckoutOnePage';
 import { CheckoutTwoPage } from '../pages/CheckoutTwoPage';
@@ -11,7 +11,7 @@ type MyFixtures = {
   loginPage: LoginPage;
   inventoryPage: InventoryPage;
   headerPage: HeaderPage;
-  itemPage: ItemPage;
+  itemDetailsPage: ItemDetailsPage;
   cartPage: CartPage;
   checkoutOnePage: CheckoutOnePage;
   checkoutTwoPage: CheckoutTwoPage;
@@ -35,9 +35,9 @@ export const test = base.extend<MyFixtures>({
     await use(headerPage);
   },
 
-  itemPage: async ({ page }, use) => {
-    const itemPage = new ItemPage(page);
-    await use(itemPage);
+  itemDetailsPage: async ({ page }, use) => {
+    const itemDetailsPage = new ItemDetailsPage(page);
+    await use(itemDetailsPage);
   },
 
   cartPage: async ({ page }, use) => {
