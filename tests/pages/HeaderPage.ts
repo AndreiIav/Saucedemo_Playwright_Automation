@@ -47,7 +47,7 @@ export class HeaderPage {
   }
 
   async getPageTitle() {
-    return this.pageTitle.innerText();
+    return await this.pageTitle.innerText();
   }
 
   async clickBackToProductsButton() {
