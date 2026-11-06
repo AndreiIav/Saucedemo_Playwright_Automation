@@ -74,7 +74,7 @@ test('Cart Items Total is calculated correctly', async ({
   await checkoutOnePage.enterValuesForCheckoutField();
   await checkoutOnePage.clickContinueButton();
 
-  await expect(page).toHaveURL(pageURLs.checkoutStepTwo);
+  await page.waitForURL(pageURLs.checkoutStepTwo);
   const checkoutItems = await checkoutTwoPage.getPriceOfAllItemsOnPage();
 
   const itemTotal = calculateTotal(...checkoutItems);
