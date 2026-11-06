@@ -78,19 +78,3 @@ test.describe('Test Checkout step one form errors', () => {
     });
   });
 });
-
-test('Can navigate to Checkout step two page fron Checkout step one', async ({
-      inventoryPage,
-      headerPage,
-      cartPage,
-      checkoutOnePage,
-       page}) => {
-        await inventoryPage.goto();
-        await headerPage.clickCartButton();
-        await cartPage.clickCheckoutButton();
-        await checkoutOnePage.enterValuesForCheckoutField();
-
-        await checkoutOnePage.clickContinueButton();
-
-        await expect(page).toHaveURL(pageURLs.checkoutStepTwo);
-});

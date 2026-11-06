@@ -1,12 +1,12 @@
 # Playwright Test Automation Suite – SauceDemo
 
-This project is a **test automation suite built with Playwright and Typescript** for the practice application [www.saucedemo.com](https://www.saucedemo.com/). The site provides multiple predefined users, each exposing different application behaviors.
+This project is a **test automation suite built with Playwright and Typescript** for the practice application [www.saucedemo.com](https://www.saucedemo.com/). The site provides multiple predefined users, each exposing different application behaviors. 
 
 The test suite follows the **Page Object Model (POM)** pattern.
 
 Tests are executed by default with `standard_user`, but any saucedemo user can be supplied at runtime via configuration or environment variables.
 
-When executed against non-standard users (e.g. `problem_user`, `error_user`), the suite is able to detect an report existing defects in the application.
+When executed against non-standard users (e.g. `problem_user`, `error_user`), the suite is able to detect and report existing defects in the application.
 
 # Tech Stack
 - Playwright

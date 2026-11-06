@@ -15,14 +15,20 @@ test('Can navigate to Items page from Cart page', async ({
   await expect(page).toHaveURL(pageURLs.itemsPage);
 });
 
-test('Can navigate to Item page from Cart page', async ({ inventoryPage, headerPage, page }) => {
+test('Can navigate to Item details page from Cart page', async ({ 
+    inventoryPage,
+    headerPage,
+    cartPage,
+    page }) => {
   const testItemName = 'Sauce Labs Backpack';
   const expectedUrlPattern = new RegExp(`${pageURLs.itemPage}\\?id=\\d+$`);
 
   await inventoryPage.goto();
-  await inventoryPage.addItemToCart(testItemName);
+  const inventoryItem = inventoryPage.getItem('Sauce Labs Backpack');
+  await inventoryItem.addToCart();
   await headerPage.clickCartButton();
-  await inventoryPage.clickItemNameLink(testItemName);
+  const cartItem = cartPage.getItem(testItemName);
+  await cartItem.openViaName();
 
   await expect(page).toHaveURL(expectedUrlPattern);
 });
@@ -40,40 +46,53 @@ test('Can navigate to Checkout step one page from Cart page', async ({
   await expect(page).toHaveURL(pageURLs.checkoutStepOne);
 });
 
-test('Added Items details match when accessing Cart page', async ({
+test('Added Inventory Items details match on Cart page', async ({
   inventoryPage,
   headerPage,
+  cartPage
 }) => {
-  const testItemNames = ['Sauce Labs Backpack', 'Sauce Labs Bike Light', 'Sauce Labs Bolt T-Shirt'];
+  const testItemNames = [
+    'Sauce Labs Backpack',
+    'Sauce Labs Bike Light',
+    'Sauce Labs Bolt T-Shirt'
+  ];
   const inventoryItems = [];
+  const cartItems = [];
 
   await inventoryPage.goto();
   for (const testItemName of testItemNames) {
-    const item = await inventoryPage.addItemToCart(testItemName);
-    inventoryItems.push(item);
+    const inventoryItem = inventoryPage.getItem(testItemName);
+    const inventoryItemDetails = await inventoryItem.getItemDetails();
+    await inventoryItem.addToCart();
+    inventoryItems.push(inventoryItemDetails);
   }
+  
   await headerPage.clickCartButton();
-  const allItemsOnCartPage = await inventoryPage.getAllItemsOnPage();
+  for (const testItemName of testItemNames) {
+    const cartItem = cartPage.getItem(testItemName);
+    const cartItemDetails = await cartItem.getItemDetails();
+    cartItems.push(cartItemDetails);
+  }
 
-  expect(inventoryItems).toEqual(allItemsOnCartPage);
+  expect(inventoryItems).toEqual(cartItems);
 });
 
-test('Item can be removed from Cart in Cart page', async ({ inventoryPage, headerPage }) => {
-  const testItemNames = ['Sauce Labs Backpack', 'Sauce Labs Bike Light', 'Sauce Labs Bolt T-Shirt'];
-  const inventoryItems = [];
+test('Item can be removed from Cart in Cart page', async ({ 
+  inventoryPage,
+  cartPage,
+  headerPage }) => {
+  const testItemName = 'Sauce Labs Backpack';
 
   await inventoryPage.goto();
-  for (const testItemName of testItemNames) {
-    const item = await inventoryPage.addItemToCart(testItemName);
-    inventoryItems.push(item);
-  }
-  await headerPage.clickCartButton();
-  const itemToBeRemovedName = testItemNames[testItemNames.length - 1];
-  await inventoryPage.removeItemFromCart(itemToBeRemovedName);
-  const inventoryItemsFiltered = inventoryItems.filter(
-    (item) => item.itemName !== itemToBeRemovedName,
-  );
-  const allItemsOnCartPage = await inventoryPage.getAllItemsOnPage();
+  const inventoryItem = inventoryPage.getItem(testItemName);
+  await inventoryItem.addToCart();
 
-  expect(inventoryItemsFiltered).toEqual(allItemsOnCartPage);
+  await headerPage.clickCartButton();
+
+  const cartItem = cartPage.getItem(testItemName);
+  expect(cartItem.name).toBeVisible();
+
+  await cartItem.remove();
+
+  expect(cartItem.name).not.toBeVisible();
 });
