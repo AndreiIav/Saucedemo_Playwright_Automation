@@ -26,7 +26,7 @@ test.describe('User Login Tests', () => {
 
   test('User cannot login with invalid password', async ({ loginPage, page }) => {
     await loginPage.goto();
-    await loginPage.login(users.standardUser.password, users.invalidUser.password);
+    await loginPage.login(users.standardUser.username, users.invalidUser.password);
     const errorMessage = await loginPage.getLoginErrorMessage();
 
     await expect(page).toHaveURL('/');
@@ -44,7 +44,7 @@ test.describe('User Login Tests', () => {
 
   test('User cannot login with missing password', async ({ loginPage, page }) => {
     await loginPage.goto();
-    await loginPage.login(users.standardUser.password, '');
+    await loginPage.login(users.standardUser.username, '');
     const errorMessage = await loginPage.getLoginErrorMessage();
 
     await expect(page).toHaveURL('/');
