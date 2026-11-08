@@ -90,9 +90,9 @@ test('Item can be removed from Cart in Cart page', async ({
   await headerPage.clickCartButton();
 
   const cartItem = cartPage.getItem(testItemName);
-  expect(cartItem.name).toBeVisible();
+  await expect(cartItem.name).toBeVisible();
 
   await cartItem.remove();
 
-  expect(cartItem.name).not.toBeVisible();
+  await expect(cartItem.name).not.toBeVisible();
 });
