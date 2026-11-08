@@ -1,5 +1,8 @@
 import { expect } from '@playwright/test';
-import { calculateTax, calculateTotal } from './utils/price.utils';
+import {
+  calculateTax,
+  calculateTotal,
+  extractNumberFromString } from './utils/price.utils';
 import pageURLs from './utils/pageURLs';
 import { test } from './fixtures/fixtures';
 
@@ -56,15 +59,21 @@ test('Cart Items Total is calculated correctly', async ({
     'Sauce Labs Backpack',
     'Sauce Labs Bike Light',
     'Sauce Labs Bolt T-Shirt'];
-  const inventoryItems = [];
+  const inventoryItemsPrices: number[] = [];
 
   await inventoryPage.goto();
   for (const testItemName of testItemNames) {
     const inventoryItem = inventoryPage.getItem(testItemName);
     await inventoryItem.addToCart();
-    const inventoryItemDetails = await inventoryItem.getItemDetails();
-    inventoryItems.push(inventoryItemDetails);
+    const inventoryItemPrice = await inventoryItem.getPrice();
+    const inventoryItemPriceNumber = extractNumberFromString(inventoryItemPrice);
+    inventoryItemsPrices.push(inventoryItemPriceNumber);
   }
+
+  const itemTotal = calculateTotal(...inventoryItemsPrices);
+  const itemTax = calculateTax(itemTotal);
+  const itemTotalPrice = calculateTotal(itemTotal, itemTax);
+  
   await headerPage.clickCartButton();
 
   await page.waitForURL(pageURLs.cartPage);
@@ -75,11 +84,7 @@ test('Cart Items Total is calculated correctly', async ({
   await checkoutOnePage.clickContinueButton();
 
   await page.waitForURL(pageURLs.checkoutStepTwo);
-  const checkoutItems = await checkoutTwoPage.getPriceOfAllItemsOnPage();
-
-  const itemTotal = calculateTotal(...checkoutItems);
-  const itemTax = calculateTax(itemTotal);
-  const itemTotalPrice = calculateTotal(itemTotal, itemTax);
+  
   const itemTotalDisplay = await checkoutTwoPage.getItemTotal();
   const itemTaxDisplay = await checkoutTwoPage.getItemTax();
   const itemTotalPriceDisplay = await checkoutTwoPage.getItemTotalPrice();
